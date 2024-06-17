@@ -30,7 +30,11 @@ const Transactions = () => {
           <table>
             <tbody>
               {transactions?.map((trans: any) => {
-                return <td key={trans.id}>{trans.id}</td>;
+                return (
+                  <tr key={trans.id}>
+                    <td key={trans.id}>{JSON.stringify(trans)}</td>
+                  </tr>
+                );
               })}
             </tbody>
           </table>
