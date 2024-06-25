@@ -30,7 +30,7 @@ export default function Component() {
       });
 
       if (responseLogin.status === 200) {
-        router.push("/transactions");
+        router.push("/dashboard ");
       }
     } catch (error) {
       console.log(error);
