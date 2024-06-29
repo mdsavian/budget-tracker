@@ -4,12 +4,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/router";
 import { useState, FormEvent } from "react";
+import axios from "axios";
 
 export default function Component() {
   const [email, setEmail] = useState<string>("marlon.savian@gmail.com");
   const [password, setPassword] = useState<string>("123456");
   const router = useRouter();
-  const url = process.env.NEXT_PUBLIC_BUDGET_TRACKER_API || "";
 
   const makeLogin = async (e: FormEvent) => {
     e.preventDefault();
@@ -17,20 +17,19 @@ export default function Component() {
       return;
     }
     try {
-      const responseLogin = await fetch(`${url}/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
+      const responseLogin = await axios.post(
+        "/login",
+        {
           email,
           password,
-        }),
-      });
+        },
+        {
+          withCredentials: true,
+        }
+      );
 
       if (responseLogin.status === 200) {
-        router.push("/transactions");
+        router.push("/dashboard ");
       }
     } catch (error) {
       console.log(error);
