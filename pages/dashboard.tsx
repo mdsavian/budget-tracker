@@ -13,6 +13,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import axios from "axios";
+import { useEffect, useState } from "react";
+import dayjs from "dayjs";
 
 function CategoryRow() {
   return (
@@ -26,11 +28,30 @@ function CategoryRow() {
 }
 
 export default function Dashboard() {
-  const array = new Array(10).fill(1);
-
-  const transactions = async () => {
-    const x = await axios.get("/dashboard");
+  type Transaction = {
+    id: string;
+    accountId: string;
+    creditCardId: string | null;
+    categoryId: string;
+    transactionType: "Credit" | "Debit";
+    date: string;
+    description: string;
+    amount: number;
+    paid: boolean;
+    costOfLiving: boolean;
+    createdAt: string;
+    updatedAt: string;
   };
+  const array = new Array(10).fill(1);
+  const [data, setData] = useState<Transaction[]>([]);
+
+  const fetchTransactions = async () => {
+    const x = await axios.get("/transaction");
+    setData(x.data);
+  };
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -95,8 +116,8 @@ export default function Dashboard() {
               <CardTitle className="text-md font-medium">Despesa por categoria</CardTitle>
             </CardHeader>
             <CardContent>
-              {array.map((c) => {
-                return <CategoryRow key={c} />;
+              {array.map((c, index) => {
+                return <CategoryRow key={index} />;
               })}
             </CardContent>
           </Card>
@@ -126,20 +147,26 @@ export default function Dashboard() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  <TableRow>
-                    <TableCell>
-                      <Badge className="text-xs" variant="default">
-                        Approved
-                      </Badge>
-                      <CreditCard />
-                    </TableCell>
-                    <TableCell>01/01/2024</TableCell>
-                    <TableCell>Compra semanal</TableCell>
-                    <TableCell>Comida casa</TableCell>
-                    <TableCell>Conta PF</TableCell>
-                    <TableCell>1.234,55</TableCell>
-                    <TableCell className="text-left">Editar, pagar, </TableCell>
-                  </TableRow>
+                  {data?.map((c) => {
+                    return (
+                      <TableRow key={c.id}>
+                        <TableCell>
+                          <Badge className="text-xs" variant="default">
+                            {c.paid ? "Paga" : "Nao paga"}
+                          </Badge>
+                          {c.creditCardId && <CreditCard />}
+                        </TableCell>
+                        <TableCell>{dayjs(c.date).format("DD/MM/YYYY")}</TableCell>
+                        <TableCell>{c.description}</TableCell>
+                        <TableCell>{c.categoryId}</TableCell>
+                        <TableCell>{c.accountId}</TableCell>
+                        <TableCell>
+                          {c.amount.toLocaleString("pt-br", { style: "currency", currency: "BRL" })}
+                        </TableCell>
+                        <TableCell className="text-left">Editar, pagar, </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </CardContent>
