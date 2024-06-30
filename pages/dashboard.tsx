@@ -176,10 +176,15 @@ export default function Dashboard() {
                     return (
                       <TableRow key={c.id}>
                         <TableCell>
-                          <Badge className="text-xs" variant="default">
-                            {c.paid ? "Paga" : "Nao paga"}
-                          </Badge>
-                          {c.creditCardId && <CreditCard />}
+                          <div className="flex gap-2">
+                            <Badge
+                              className={`text-xs ${c.paid ? "bg-green-400" : "bg-red-400"}`}
+                              variant="default"
+                            >
+                              {c.paid ? "Paga" : "Não paga"}
+                            </Badge>
+                            {c.creditCardId && <CreditCard />}
+                          </div>
                         </TableCell>
                         <TableCell>{dayjs(c.date).format("DD/MM/YYYY")}</TableCell>
                         <TableCell>{c.description}</TableCell>
