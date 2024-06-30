@@ -15,39 +15,72 @@ import {
 import axios from "axios";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
+import { cn } from "@/lib/utils";
 
-function CategoryRow() {
+type Account = {
+  name: string;
+  id: string;
+  balance: number;
+};
+
+type CategoryTotal = {
+  name: string;
+  total: number;
+};
+function CategoryRow({ categoryTotal }: { categoryTotal: CategoryTotal }) {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2">
-      <div className="text-md flex items-center">Conta PF</div>
-      <div className="text-lg md:text-xl font-bold flex items center lg:justify-end leading-1">
-        R$45,231.89
+    <div className="grid grid-cols-2">
+      <div className="text-xl flex items-center"> {categoryTotal.name}</div>
+      <div className="text-xl font-bold flex items center justify-end">
+        {formatValue(categoryTotal.total || 0)}
       </div>
     </div>
   );
 }
 
+function AccountRow({ account }: { account: Account }) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2">
+      <div className={titleStyles}>{account.name}</div>
+      <div className={valueStyles}>{formatValue(account.balance)}</div>
+    </div>
+  );
+}
+
+function formatValue(value: number): string {
+  return value.toLocaleString("pt-br", { style: "currency", currency: "BRL" });
+}
+const titleStyles = "sm:text-xl text-xl md:text-lg lg:text-xl flex items-center";
+const valueStyles =
+  "sm:text-xl text-xl md:text-lg lg:text-xl font-bold flex items center md:justify-end";
 export default function Dashboard() {
   type Transaction = {
     id: string;
-    accountId: string;
+    account: string;
     creditCardId: string | null;
-    categoryId: string;
+    creditCardName: string | null;
+    category: string;
     transactionType: "Credit" | "Debit";
     date: string;
     description: string;
     amount: number;
     paid: boolean;
     costOfLiving: boolean;
-    createdAt: string;
-    updatedAt: string;
   };
-  const array = new Array(10).fill(1);
-  const [data, setData] = useState<Transaction[]>([]);
+
+  type DashboardData = {
+    transactions: Transaction[];
+    totalCredit: number;
+    totalDebit: number;
+    totalCreditCard: number;
+    categoryTotals: CategoryTotal[];
+    accounts: Account[];
+  };
+  const [data, setData] = useState<DashboardData>();
 
   const fetchTransactions = async () => {
-    const x = await axios.get("/transaction");
-    setData(x.data);
+    const dashboardData = await axios.get("/dashboard");
+    setData(dashboardData.data);
   };
   useEffect(() => {
     fetchTransactions();
@@ -56,69 +89,61 @@ export default function Dashboard() {
   return (
     <div className="flex min-h-screen w-full flex-col">
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-        <div className="grid gap-4 grid-cols-2 md:grid-cols-4 md:gap-8">
+        <div className="grid gap-4 grid-cols-2 md:gap-8">
           <Card x-chunk="dashboard-01-chunk-0">
-            <CardHeader className="flex flex-row items-center space-y-0">
-              <Users className="h-6 w-6 text-muted-foreground mr-2" />
-              <CardTitle className="text-md font-medium">Saldo Atual</CardTitle>
+            <CardHeader className="flex flex-row items-center space-y-0 max-h-12 bg-blue-100 p-2">
+              <Users className="h-6 w-6 text-muted-foreground mr-1" />
+              <CardTitle className="text-md lg:text-xl">Saldo Atual</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 lg:grid-cols-2 mt-4">
-                <div className="text-md flex items-center">Conta PF</div>
-                <div className="text-lg md:text-xl font-bold flex items center lg:justify-end">
-                  R$45,231.89
+            <CardContent className="p-2">
+              {data?.accounts.map((account) => {
+                return <AccountRow key={account.id} account={account} />;
+              })}
+            </CardContent>
+          </Card>
+
+          <Card x-chunk="dashboard-01-chunk-0">
+            <CardHeader className="flex flex-row items-center space-y-0 max-h-12 bg-blue-100 p-2">
+              <ArrowUp className="h-6 w-6 text-muted-foreground mr-1" />
+              <CardTitle className="text-md lg:text-xl">Balanço mensal</CardTitle>
+            </CardHeader>
+            <CardContent className="p-2">
+              <div className="grid grid-cols-1 md:grid-cols-2">
+                <div className={titleStyles}>Receitas</div>
+                <div className={cn(valueStyles, "text-green-600")}>
+                  {formatValue(data?.totalCredit || 0)}
                 </div>
               </div>
-              <div className="grid grid-cols-1 lg:grid-cols-2">
-                <div className="text-md flex items-center">Conta PJ</div>
-                <div className="text-xl flex items center font-bold lg:justify-end">
-                  R$45,231.89
+
+              <div className="grid grid-cols-1 md:grid-cols-2">
+                <div className={titleStyles}>Despesas</div>
+                <div className={cn(valueStyles, "text-red-600")}>
+                  {formatValue(data?.totalDebit || 0)}
                 </div>
               </div>
-            </CardContent>
-          </Card>
 
-          <Card x-chunk="dashboard-01-chunk-0">
-            <CardHeader className="flex flex-row items-center space-y-0">
-              <ArrowUp className="h-6 w-6 text-muted-foreground" />
-              <CardTitle className="text-md font-medium">Receitas</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl lg:text-4xl text-center font-bold">R$23.550,00</div>
-            </CardContent>
-          </Card>
-
-          <Card x-chunk="dashboard-01-chunk-0">
-            <CardHeader className="flex flex-row items-center space-y-0">
-              <ArrowDown className="h-6 w-6 text-muted-foreground mr-2" />
-              <CardTitle className="text-md font-medium">Despesas</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl lg:text-4xl text-center font-bold">R$23.550,00</div>
-            </CardContent>
-          </Card>
-
-          <Card x-chunk="dashboard-01-chunk-0">
-            <CardHeader className="flex flex-row items-center space-y-0">
-              <CreditCard className="h-6 w-6 text-muted-foreground mr-2" />
-              <CardTitle className="text-md font-medium">Cartão de crédito</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl lg:text-4xl text-center font-bold">R$23.550,00</div>
+              <div className="grid grid-cols-1 md:grid-cols-2">
+                <div className={titleStyles}>Cartão de crédito</div>
+                <div className={cn(valueStyles, "text-red-600")}>
+                  {formatValue(data?.totalCreditCard || 0)}
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
 
-        <div className="grid gap-4 grid-cols-2 md:grid-cols-4 md:gap-8">
+        <div className="grid gap-4 grid-cols-1 md:gap-8">
           <Card x-chunk="dashboard-01-chunk-0">
-            <CardHeader className="flex flex-row items-center space-y-0">
+            <CardHeader className="flex flex-row items-center space-y-0 max-h-12 bg-blue-100 p-2">
               <BarChart className="h-6 w-6 text-muted-foreground mr-2" />
-              <CardTitle className="text-md font-medium">Despesa por categoria</CardTitle>
+              <CardTitle className="text-md lg:text-xl">Despesa por categoria</CardTitle>
             </CardHeader>
-            <CardContent>
-              {array.map((c, index) => {
-                return <CategoryRow key={index} />;
-              })}
+            <CardContent className="p-2">
+              {data?.categoryTotals
+                .sort((a, b) => b.total - a.total)
+                .map((category, index) => {
+                  return <CategoryRow key={`${index}${category.name}`} categoryTotal={category} />;
+                })}
             </CardContent>
           </Card>
         </div>
@@ -147,7 +172,7 @@ export default function Dashboard() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {data?.map((c) => {
+                  {data?.transactions?.map((c) => {
                     return (
                       <TableRow key={c.id}>
                         <TableCell>
@@ -158,8 +183,8 @@ export default function Dashboard() {
                         </TableCell>
                         <TableCell>{dayjs(c.date).format("DD/MM/YYYY")}</TableCell>
                         <TableCell>{c.description}</TableCell>
-                        <TableCell>{c.categoryId}</TableCell>
-                        <TableCell>{c.accountId}</TableCell>
+                        <TableCell>{c.category}</TableCell>
+                        <TableCell>{c.account}</TableCell>
                         <TableCell>
                           {c.amount.toLocaleString("pt-br", { style: "currency", currency: "BRL" })}
                         </TableCell>
