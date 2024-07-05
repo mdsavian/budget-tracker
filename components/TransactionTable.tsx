@@ -29,7 +29,6 @@ export default function TransactionTable({
   categoryLabels?: string[];
 }) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-
   const columns = React.useMemo<ColumnDef<any, any>[]>(
     () => [
       {
@@ -49,7 +48,7 @@ export default function TransactionTable({
         },
       },
       {
-        accessorFn: (row) => dayjs(row.date).format("DD/MM/YYYY"),
+        accessorKey: "date",
         id: "date",
         cell: (info) => info.getValue(),
         header: "Data",
@@ -69,7 +68,7 @@ export default function TransactionTable({
       },
       {
         accessorKey: "account",
-        header: "Conta</span",
+        header: "Conta",
         meta: {
           filterVariant: "account",
         },
@@ -85,15 +84,19 @@ export default function TransactionTable({
     []
   );
 
-  const formattedData = transactions?.map((c) => {
-    return {
-      ...c,
-      paid: c.paid ? "Sim" : "Não",
-      creditCard: c.creditCardId ? "Sim" : "Não",
-      date: dayjs(c.date).format("DD/MM/YYYY"),
-      amount: formatValue(c.amount),
-    };
-  });
+  const formattedData = React.useMemo(
+    () =>
+      transactions?.map((c) => {
+        return {
+          ...c,
+          paid: c.paid ? "Sim" : "Não",
+          creditCard: c.creditCardId ? "Sim" : "Não",
+          date: dayjs(c.date).format("DD/MM/YYYY"),
+          //TODO format amount amount: formatValue(c.amount),
+        };
+      }),
+    [transactions]
+  );
 
   const table = useReactTable({
     data: formattedData || [],
@@ -113,7 +116,7 @@ export default function TransactionTable({
 
   return (
     <div className="p-2">
-      <table>
+      <table className="w-full">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
