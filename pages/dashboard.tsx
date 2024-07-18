@@ -55,9 +55,16 @@ export default function Dashboard() {
   const [data, setData] = useState<DashboardData>();
 
   const fetchTransactions = async () => {
-    const dashboardData = await axios.get("/dashboard");
+    const dashboardData = await axios.get("/dashboard", {
+      params: {
+        startDate: dayjs().startOf("month").format("YYYY-MM-DD"),
+        endDate: dayjs().endOf("month").format("YYYY-MM-DD"),
+      },
+    });
+
     setData(dashboardData.data);
   };
+
   useEffect(() => {
     fetchTransactions();
   }, []);
