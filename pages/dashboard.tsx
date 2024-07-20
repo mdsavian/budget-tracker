@@ -1,17 +1,8 @@
 import Link from "next/link";
-import { ArrowDown, ArrowUp, BarChart, CirclePlus, CreditCard, Users } from "lucide-react";
+import { ArrowUp, BarChart, CirclePlus, CreditCard, Users } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
@@ -133,7 +124,7 @@ export default function Dashboard() {
           <Card className="lg:col-span-2" x-chunk="dashboard-01-chunk-4">
             <CardHeader className="flex flex-row items-center ">
               <Button asChild size="sm" className="mr-auto gap-1">
-                <Link href="#">
+                <Link href="/addTransaction">
                   <CirclePlus className="h-6 w-6 mr-1" />
                   Add Transaction
                 </Link>
