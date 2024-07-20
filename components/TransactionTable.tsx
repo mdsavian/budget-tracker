@@ -17,7 +17,7 @@ import { formatValue } from "../utils";
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData, TValue> {
-    filterVariant?: "text" | "amount" | "account" | "category" | "yesNo";
+    filterVariant?: "tipo" | "text" | "amount" | "account" | "category" | "yesNo";
   }
 }
 
@@ -40,11 +40,19 @@ export default function TransactionTable({
         },
       },
       {
-        accessorKey: "creditCard",
+        accessorKey: "receitaCard",
         cell: (info) => info.getValue(),
         header: "Cartão",
         meta: {
           filterVariant: "yesNo",
+        },
+      },
+      {
+        accessorKey: "tipo",
+        cell: (info) => info.getValue(),
+        header: "Tipo",
+        meta: {
+          filterVariant: "tipo",
         },
       },
       {
@@ -90,7 +98,8 @@ export default function TransactionTable({
         return {
           ...c,
           paid: c.paid ? "Sim" : "Não",
-          creditCard: c.creditCardId ? "Sim" : "Não",
+          tipo: c.transactionType,
+          receitaCard: c.creditCardId ? "Sim" : "Não",
           date: dayjs(c.date).format("DD/MM/YYYY"),
           //TODO format amount amount: formatValue(c.amount),
         };
@@ -247,6 +256,19 @@ function Filter({
           {label}
         </option>
       ))}
+    </select>
+  ) : filterVariant === "tipo" ? (
+    <select
+      onChange={(e) => column.setFilterValue(e.target.value)}
+      value={columnFilterValue?.toString()}
+    >
+      <option value="">All</option>
+      <option key="receita" value="receita">
+        receita
+      </option>
+      <option key="despesa" value="despesa">
+        despesa
+      </option>
     </select>
   ) : (
     <DebouncedInput

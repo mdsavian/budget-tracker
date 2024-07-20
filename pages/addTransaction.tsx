@@ -10,21 +10,22 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
+import dayjs from "dayjs";
 
 const AddTransaction = () => {
   const [accounts, setAccounts] = useState([]);
   const [creditCards, setCreditCards] = useState([]);
   const [categories, setCategories] = useState([]);
 
-  const [date, setDate] = useState("");
-  const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState("");
-  const [account, setAccount] = useState("");
-  const [description, setDescription] = useState("");
-  const [paid, setPaid] = useState(false);
-  const [fixed, setFixed] = useState(false);
-  const [creditCard, setCreditCard] = useState("");
-  const [parcelas, setParcelas] = useState("");
+  const [date, setDate] = useState<string>("");
+  const [amount, setAmount] = useState<number>(0);
+  const [categoryId, setCategoryId] = useState<string>("");
+  const [accountId, setAccountId] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [paid, setPaid] = useState<boolean>(false);
+  const [fixed, setFixed] = useState<boolean>(false);
+  const [creditCardId, setCreditCardId] = useState<string>("");
+  const [installments, setInstallments] = useState<number>(0);
 
   const fetchData = async () => {
     const categoriesPromise = axios.get("/category");
@@ -36,8 +37,6 @@ const AddTransaction = () => {
     setAccounts(result[1].data);
     setCreditCards(result[2].data);
     setCategories(result[0].data);
-
-    console.log(result);
   };
 
   useEffect(() => {
@@ -46,6 +45,25 @@ const AddTransaction = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle form submission here
+
+    if (!date || !amount || !categoryId || !accountId) {
+      //log error (toast)
+      return;
+    }
+
+    const url = creditCardId ? "/transaction/expense/creditcard" : "/transaction/expense";
+
+    axios.post(url, {
+      date: dayjs(date).format("YYYY-MM-DD"),
+      amount,
+      categoryId,
+      accountId,
+      description,
+      paid,
+      fixed,
+      creditCardId: creditCardId ? creditCardId : null,
+      installments: installments ? installments : 0,
+    });
   };
 
   return (
@@ -62,7 +80,7 @@ const AddTransaction = () => {
           </Label>
           <Label>
             Category
-            <Select value={category} onValueChange={(e) => setCategory(e)}>
+            <Select value={categoryId} onValueChange={(e) => setCategoryId(e)}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
@@ -77,7 +95,7 @@ const AddTransaction = () => {
           </Label>
           <Label>
             Account:
-            <Select value={account} onValueChange={(e) => setAccount(e)}>
+            <Select value={accountId} onValueChange={(e) => setAccountId(e)}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Account" />
               </SelectTrigger>
@@ -109,7 +127,7 @@ const AddTransaction = () => {
           </Label>
           <Label>
             Credit Card:
-            <Select value={creditCard} onValueChange={(e) => setCreditCard(e)}>
+            <Select value={creditCardId} onValueChange={(e) => setCreditCardId(e)}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Credit Card" />
               </SelectTrigger>
@@ -123,8 +141,12 @@ const AddTransaction = () => {
             </Select>
           </Label>
           <Label>
-            Parcelas:
-            <Input type="number" value={parcelas} onChange={(e) => setParcelas(e.target.value)} />
+            Installments:
+            <Input
+              type="number"
+              value={installments}
+              onChange={(e) => setInstallments(e.target.value)}
+            />
           </Label>
           <Button type="submit">Submit</Button>
         </form>
