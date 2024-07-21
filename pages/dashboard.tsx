@@ -40,6 +40,7 @@ export default function Dashboard() {
     totalCredit: number;
     totalDebit: number;
     totalCreditCard: number;
+    totalDebitUnpaid: number;
     categoryTotals: CategoryTotal[];
     accounts: Account[];
   };
@@ -93,6 +94,13 @@ export default function Dashboard() {
                 <div className={titleStyles}>Despesas</div>
                 <div className={cn(valueStyles, "text-red-600")}>
                   {formatValue(data?.totalDebit || 0)}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2">
+                <div className={titleStyles}>Despesas nao pagas</div>
+                <div className={cn(valueStyles, "text-red-600")}>
+                  {formatValue(data?.totalDebitUnpaid || 0)}
                 </div>
               </div>
 
