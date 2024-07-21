@@ -46,24 +46,24 @@ const AddTransaction = () => {
     e.preventDefault();
     // Handle form submission here
 
+    console.log(paid);
     if (!date || !amount || !categoryId || !accountId) {
       //log error (toast)
       return;
     }
 
     const url = creditCardId ? "/transaction/expense/creditcard" : "/transaction/expense";
-
-    axios.post(url, {
-      date: dayjs(date).format("YYYY-MM-DD"),
-      amount,
-      categoryId,
-      accountId,
-      description,
-      paid,
-      fixed,
-      creditCardId: creditCardId ? creditCardId : null,
-      installments: installments ? installments : 0,
-    });
+    //    axios.post(url, {
+    //date: dayjs(date).format("YYYY-MM-DD"),
+    //amount,
+    //categoryId,
+    //accountId,
+    //description,
+    //paid,
+    //fixed,
+    //creditCardId: creditCardId ? creditCardId : null,
+    //installments: installments ? installments : 0,
+    //});
   };
 
   return (

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 import {
   Column,
@@ -14,6 +14,9 @@ import {
 import { Transaction } from "../types";
 import dayjs from "dayjs";
 import { formatValue } from "../utils";
+import utc from "dayjs/plugin/utc";
+import { Button } from "@/components/ui/button";
+import axios from "axios";
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData, TValue> {
@@ -28,6 +31,7 @@ export default function TransactionTable({
   transactions?: Transaction[];
   categoryLabels?: string[];
 }) {
+  dayjs.extend(utc);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const columns = React.useMemo<ColumnDef<any, any>[]>(
     () => [
@@ -84,13 +88,19 @@ export default function TransactionTable({
       {
         accessorKey: "amount",
         header: "Valor",
-        meta: {
-          filterVariant: "amount",
-        },
+      },
+      {
+        accessorKey: "effectuate",
+        cell: (info) => info.getValue(),
+        header: "Efetuar",
       },
     ],
     []
   );
+
+  const efetuar = async (id: string) => {
+    await axios.put(`/transaction/effectuate/${id}`);
+  };
 
   const formattedData = React.useMemo(
     () =>
@@ -100,8 +110,10 @@ export default function TransactionTable({
           paid: c.paid ? "Sim" : "Não",
           tipo: c.transactionType,
           receitaCard: c.creditCardId ? "Sim" : "Não",
-          date: dayjs(c.date).format("DD/MM/YYYY"),
-          //TODO format amount amount: formatValue(c.amount),
+          date: dayjs(c.date).utc().format("DD/MM/YYYY"),
+          amount: formatValue(c.amount),
+          numberAmount: c.amount,
+          effectuate: <Button onClick={() => efetuar(c.id)}>Efetuar</Button>,
         };
       }),
     [transactions]
@@ -122,6 +134,34 @@ export default function TransactionTable({
     debugHeaders: true,
     debugColumns: false,
   });
+
+  const tableRows = table.getFilteredRowModel().rows;
+  const categorieFilteredTotals = useMemo(() => {
+    const categoryTotals: any = {};
+    const categoryFormattedTotals: any = {};
+
+    tableRows.forEach((row) => {
+      console.log(row);
+      const category = row.original.category;
+      const amount = row.original.numberAmount;
+
+      if (category && amount) {
+        if (categoryTotals[category]) {
+          categoryTotals[category] += amount;
+          categoryFormattedTotals[category] = formatValue(categoryTotals[category]);
+        } else {
+          categoryTotals[category] = amount;
+          categoryFormattedTotals[category] = formatValue(amount);
+        }
+      }
+    });
+
+    const sortedCategoryFormatted = Object.keys(categoryFormattedTotals).sort();
+    return sortedCategoryFormatted.reduce((sortedObj: any, key) => {
+      sortedObj[key] = categoryFormattedTotals[key];
+      return sortedObj;
+    }, {});
+  }, [tableRows]);
 
   return (
     <div className="p-2">
@@ -177,6 +217,7 @@ export default function TransactionTable({
           })}
         </tbody>
       </table>
+      <pre>{JSON.stringify({ row: categorieFilteredTotals }, null, 2)}</pre>
     </div>
   );
 }
