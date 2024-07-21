@@ -17,6 +17,7 @@ import { formatValue } from "../utils";
 import utc from "dayjs/plugin/utc";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
+import { CalendarDateRangePicker } from "./dateRangePicker";
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData, TValue> {
@@ -165,6 +166,9 @@ export default function TransactionTable({
 
   return (
     <div className="p-2">
+      <div className="hidden items-center space-x-2 md:flex">
+        <CalendarDateRangePicker />
+      </div>
       <table className="w-full">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
