@@ -3,28 +3,47 @@ import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
-import { Transaction } from '@/constants/data';
 import { Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { columns } from './columns';
+import { useEffect, useState } from 'react';
+import { endOfMonth, format, startOfMonth } from 'date-fns';
+import { Transaction } from '@/types';
+import axiosInstance from '@/lib/axios/axios';
 
-interface ProductsClientProps {
-  data: Transaction[];
-}
-
-export const TransactionClient: React.FC<ProductsClientProps> = ({ data }) => {
+export const TransactionClient: React.FC = () => {
   const router = useRouter();
+
+  const [data, setData] = useState<Transaction[]>([]);
+  const [startDate, setStartDate] = useState(
+    format(startOfMonth(new Date()), 'yyyy-MM-dd')
+  );
+  const [endDate, setEndDate] = useState(
+    format(endOfMonth(new Date()), 'yyyy-MM-dd')
+  );
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      const dashboardData = await axiosInstance.get('dashboard/transaction', {
+        params: {
+          startDate: startDate,
+          endDate: endDate
+        }
+      });
+      console.log(dashboardData, dashboardData.data);
+      setData(dashboardData.data);
+    };
+
+    fetchTransactions();
+  }, [startDate, endDate]);
 
   return (
     <>
       <div className="flex items-start justify-between">
-        <Heading
-          title={`Transactions (${data.length})`}
-          description="Manage users (Client side table functionalities.)"
-        />
+        <Heading title="Transactions" description="" />
         <Button
           className="text-xs md:text-sm"
-          onClick={() => router.push(`/dashboard/user/new`)}
+          onClick={() => router.push(`/dashboard/transacion/new`)}
         >
           <Plus className="mr-2 h-4 w-4" /> Add New
         </Button>

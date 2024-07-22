@@ -1,21 +1,21 @@
-import Link from "next/link";
-import { ArrowUp, BarChart, CirclePlus, CreditCard, Users } from "lucide-react";
+import Link from 'next/link';
+import { ArrowUp, BarChart, CirclePlus, CreditCard, Users } from 'lucide-react';
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import dayjs from "dayjs";
-import { cn } from "@/lib/utils";
-import { Account, CategoryTotal, Transaction } from "../types";
-import { formatValue } from "../utils";
-import TransactionTable from "../components/TransactionTable";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import dayjs from 'dayjs';
+import { cn } from '@/lib/utils';
+import { Account, CategoryTotal, Transaction } from '../../../types';
+import { formatValue } from '../utils';
+import TransactionTable from '../components/TransactionTable';
 
 function CategoryRow({ categoryTotal }: { categoryTotal: CategoryTotal }) {
   return (
     <div className="grid grid-cols-2">
-      <div className="text-xl flex items-center"> {categoryTotal.name}</div>
-      <div className="text-xl font-bold flex items center justify-end">
+      <div className="flex items-center text-xl"> {categoryTotal.name}</div>
+      <div className="items center flex justify-end text-xl font-bold">
         {formatValue(categoryTotal.total || 0)}
       </div>
     </div>
@@ -31,9 +31,10 @@ function AccountRow({ account }: { account: Account }) {
   );
 }
 
-const titleStyles = "sm:text-xl text-xl md:text-lg lg:text-xl flex items-center";
+const titleStyles =
+  'sm:text-xl text-xl md:text-lg lg:text-xl flex items-center';
 const valueStyles =
-  "sm:text-xl text-xl md:text-lg lg:text-xl font-bold flex items center md:justify-end";
+  'sm:text-xl text-xl md:text-lg lg:text-xl font-bold flex items center md:justify-end';
 export default function Dashboard() {
   type DashboardData = {
     transactions: Transaction[];
@@ -47,11 +48,11 @@ export default function Dashboard() {
   const [data, setData] = useState<DashboardData>();
 
   const fetchTransactions = async () => {
-    const dashboardData = await axios.get("/dashboard", {
+    const dashboardData = await axios.get('/dashboard', {
       params: {
-        startDate: dayjs().startOf("month").format("YYYY-MM-DD"),
-        endDate: dayjs().endOf("month").format("YYYY-MM-DD"),
-      },
+        startDate: dayjs().startOf('month').format('YYYY-MM-DD'),
+        endDate: dayjs().endOf('month').format('YYYY-MM-DD')
+      }
     });
 
     setData(dashboardData.data);
@@ -64,10 +65,10 @@ export default function Dashboard() {
   return (
     <div className="flex min-h-screen w-full flex-col">
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 md:gap-8">
+        <div className="grid gap-4 sm:grid-cols-2 md:gap-8 xl:grid-cols-4">
           <Card x-chunk="dashboard-01-chunk-0">
-            <CardHeader className="flex flex-row items-center space-y-0 max-h-12 p-2">
-              <Users className="h-6 w-6 text-muted-foreground mr-1" />
+            <CardHeader className="flex max-h-12 flex-row items-center space-y-0 p-2">
+              <Users className="mr-1 h-6 w-6 text-muted-foreground" />
               <CardTitle className="text-md lg:text-xl">Saldo Atual</CardTitle>
             </CardHeader>
             <CardContent className="p-2">
@@ -78,35 +79,37 @@ export default function Dashboard() {
           </Card>
 
           <Card x-chunk="dashboard-01-chunk-0">
-            <CardHeader className="flex flex-row items-center space-y-0 max-h-12 p-2">
-              <ArrowUp className="h-6 w-6 text-muted-foreground mr-1" />
-              <CardTitle className="text-md lg:text-xl">Balanço mensal</CardTitle>
+            <CardHeader className="flex max-h-12 flex-row items-center space-y-0 p-2">
+              <ArrowUp className="mr-1 h-6 w-6 text-muted-foreground" />
+              <CardTitle className="text-md lg:text-xl">
+                Balanço mensal
+              </CardTitle>
             </CardHeader>
             <CardContent className="p-2">
               <div className="grid grid-cols-1 md:grid-cols-2">
                 <div className={titleStyles}>Receitas</div>
-                <div className={cn(valueStyles, "text-green-600")}>
+                <div className={cn(valueStyles, 'text-green-600')}>
                   {formatValue(data?.totalCredit || 0)}
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2">
                 <div className={titleStyles}>Despesas</div>
-                <div className={cn(valueStyles, "text-red-600")}>
+                <div className={cn(valueStyles, 'text-red-600')}>
                   {formatValue(data?.totalDebit || 0)}
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2">
                 <div className={titleStyles}>Despesas nao pagas</div>
-                <div className={cn(valueStyles, "text-red-600")}>
+                <div className={cn(valueStyles, 'text-red-600')}>
                   {formatValue(data?.totalDebitUnpaid || 0)}
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2">
                 <div className={titleStyles}>Cartão de crédito</div>
-                <div className={cn(valueStyles, "text-red-600")}>
+                <div className={cn(valueStyles, 'text-red-600')}>
                   {formatValue(data?.totalCreditCard || 0)}
                 </div>
               </div>
@@ -114,17 +117,24 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 md:gap-8">
+        <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
           <Card x-chunk="dashboard-01-chunk-0" className="">
-            <CardHeader className="flex flex-row items-center space-y-0 max-h-12 p-2">
-              <BarChart className="h-6 w-6 text-muted-foreground mr-2" />
-              <CardTitle className="text-md lg:text-xl">Despesa por categoria</CardTitle>
+            <CardHeader className="flex max-h-12 flex-row items-center space-y-0 p-2">
+              <BarChart className="mr-2 h-6 w-6 text-muted-foreground" />
+              <CardTitle className="text-md lg:text-xl">
+                Despesa por categoria
+              </CardTitle>
             </CardHeader>
             <CardContent className="p-2">
               {data?.categoryTotals
                 ?.sort((a, b) => b.total - a.total)
                 .map((category, index) => {
-                  return <CategoryRow key={`${index}${category.name}`} categoryTotal={category} />;
+                  return (
+                    <CategoryRow
+                      key={`${index}${category.name}`}
+                      categoryTotal={category}
+                    />
+                  );
                 })}
             </CardContent>
           </Card>
@@ -133,7 +143,7 @@ export default function Dashboard() {
             <CardHeader className="flex flex-row items-center ">
               <Button asChild size="sm" className="mr-auto gap-1">
                 <Link href="/addTransaction">
-                  <CirclePlus className="h-6 w-6 mr-1" />
+                  <CirclePlus className="mr-1 h-6 w-6" />
                   Add Transaction
                 </Link>
               </Button>

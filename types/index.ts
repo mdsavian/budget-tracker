@@ -1,5 +1,17 @@
 import { Icons } from '@/components/icons';
 
+export type Transaction = {
+  id: string;
+  account: string;
+  creditCardId: string;
+  creditCard: string;
+  category: string;
+  transactionType: string;
+  date: string;
+  description: string;
+  amount: number;
+  paid: boolean;
+};
 export interface NavItem {
   title: string;
   href?: string;
