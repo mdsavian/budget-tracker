@@ -10,32 +10,37 @@ import { useEffect, useState } from 'react';
 import { endOfMonth, format, startOfMonth } from 'date-fns';
 import { Transaction } from '@/types';
 import axiosInstance from '@/lib/axios/axios';
+import { DateRange } from 'react-day-picker';
+import { CalendarDateRangePicker } from '@/components/date-range-picker';
 
 export const TransactionClient: React.FC = () => {
   const router = useRouter();
 
-  const [data, setData] = useState<Transaction[]>([]);
-  const [startDate, setStartDate] = useState(
-    format(startOfMonth(new Date()), 'yyyy-MM-dd')
-  );
-  const [endDate, setEndDate] = useState(
-    format(endOfMonth(new Date()), 'yyyy-MM-dd')
-  );
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: startOfMonth(new Date()),
+    to: endOfMonth(new Date())
+  });
 
   useEffect(() => {
     const fetchTransactions = async () => {
+      if (!date?.from || !date?.to) {
+        return;
+      }
+
       const dashboardData = await axiosInstance.get('dashboard/transaction', {
         params: {
-          startDate: startDate,
-          endDate: endDate
+          startDate: format(date.from, 'yyyy-MM-dd'),
+          endDate: format(date.to, 'yyyy-MM-dd')
         }
       });
-      console.log(dashboardData, dashboardData.data);
-      setData(dashboardData.data);
+
+      setTransactions(dashboardData.data.transactions);
     };
 
     fetchTransactions();
-  }, [startDate, endDate]);
+  }, [date]);
 
   return (
     <>
@@ -49,7 +54,12 @@ export const TransactionClient: React.FC = () => {
         </Button>
       </div>
       <Separator />
-      <DataTable searchKey="name" columns={columns} data={data} />
+      <CalendarDateRangePicker date={date} setDate={setDate} />
+      <DataTable
+        searchKey="description"
+        columns={columns}
+        data={transactions}
+      />
     </>
   );
 };

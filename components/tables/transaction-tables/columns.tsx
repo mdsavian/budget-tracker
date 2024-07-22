@@ -1,10 +1,10 @@
 'use client';
 import { ColumnDef } from '@tanstack/react-table';
 import { CellAction } from './cell-action';
-import { User } from '@/constants/data';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Transaction } from '@/types';
 
-export const columns: ColumnDef<User>[] = [
+export const columns: ColumnDef<Transaction>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -24,21 +24,69 @@ export const columns: ColumnDef<User>[] = [
     enableSorting: false,
     enableHiding: false
   },
+
   {
-    accessorKey: 'name',
-    header: 'NAME'
+    accessorKey: 'paid',
+    header: 'Efetivada',
+    cell: (info) => {
+      console.log(info.getValue());
+      return info.getValue() ? 'Sim' : 'Não';
+    },
+    enableSorting: true,
+    meta: {
+      filterVariant: 'yesNo'
+    }
   },
   {
-    accessorKey: 'company',
-    header: 'COMPANY'
+    accessorKey: 'creditCardId',
+    cell: (info) => info.getValue(),
+    header: 'Cartão',
+    meta: {
+      filterVariant: 'yesNo'
+    }
   },
   {
-    accessorKey: 'role',
-    header: 'ROLE'
+    accessorKey: 'tipo',
+    cell: (info) => info.getValue(),
+    header: 'Tipo',
+    meta: {
+      filterVariant: 'tipo'
+    }
   },
   {
-    accessorKey: 'status',
-    header: 'STATUS'
+    accessorKey: 'date',
+    id: 'date',
+    cell: (info) => info.getValue(),
+    header: 'Data'
+  },
+  {
+    accessorFn: (row) => row.description,
+    id: 'description',
+    header: 'Descrição',
+    cell: (info) => info.getValue()
+  },
+  {
+    accessorKey: 'category',
+    header: 'Categoria',
+    meta: {
+      filterVariant: 'category'
+    }
+  },
+  {
+    accessorKey: 'account',
+    header: 'Conta',
+    meta: {
+      filterVariant: 'account'
+    }
+  },
+  {
+    accessorKey: 'amount',
+    header: 'Valor'
+  },
+  {
+    accessorKey: 'effectuate',
+    cell: (info) => info.getValue(),
+    header: 'Efetuar'
   },
   {
     id: 'actions',
