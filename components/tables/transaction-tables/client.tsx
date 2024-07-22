@@ -3,23 +3,23 @@ import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
-import { User } from '@/constants/data';
+import { Transaction } from '@/constants/data';
 import { Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { columns } from './columns';
 
 interface ProductsClientProps {
-  data: User[];
+  data: Transaction[];
 }
 
-export const UserClient: React.FC<ProductsClientProps> = ({ data }) => {
+export const TransactionClient: React.FC<ProductsClientProps> = ({ data }) => {
   const router = useRouter();
 
   return (
     <>
       <div className="flex items-start justify-between">
         <Heading
-          title={`Users (${data.length})`}
+          title={`Transactions (${data.length})`}
           description="Manage users (Client side table functionalities.)"
         />
         <Button

@@ -1,6 +1,6 @@
 import { NavItem } from '@/types';
 
-export type User = {
+export type Transaction = {
   id: number;
   name: string;
   company: string;
@@ -8,7 +8,7 @@ export type User = {
   verified: boolean;
   status: string;
 };
-export const users: User[] = [
+export const transactions: Transaction[] = [
   {
     id: 1,
     name: 'Candice Schiner',
@@ -118,10 +118,10 @@ export const navItems: NavItem[] = [
     label: 'Dashboard'
   },
   {
-    title: 'User',
-    href: '/dashboard/user',
-    icon: 'user',
-    label: 'user'
+    title: 'Transaction',
+    href: '/dashboard/transaction',
+    icon: 'billing',
+    label: 'transaction'
   },
   {
     title: 'Employee',
