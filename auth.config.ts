@@ -1,6 +1,8 @@
 import { NextAuthConfig } from 'next-auth';
 import CredentialProvider from 'next-auth/providers/credentials';
-import axios from 'axios';
+import { axiosInstance } from './lib/axios/axios';
+import { cookies } from 'next/headers';
+import { parse } from 'cookie';
 
 const authConfig = {
   providers: [
@@ -14,8 +16,7 @@ const authConfig = {
         }
       },
       async authorize(credentials, req) {
-        console.log(credentials);
-        const user = await axios.post(
+        const response = await axiosInstance().post(
           '/login',
           {
             email: credentials.email,
@@ -23,15 +24,38 @@ const authConfig = {
           },
           { withCredentials: true }
         );
-        console.log('entrei aqui', user);
-        if (user.data) {
-          // Any object returned will be saved in `user` property of the JWT
-          return user.data;
-        } else {
-          // If you return null then an error will be displayed advising the user to check their details.
-          return null;
 
-          // You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
+        const apiCookies = response.headers['set-cookie'];
+        if (apiCookies && apiCookies.length > 0) {
+          apiCookies.forEach((cookie) => {
+            const parsedCookie = parse(cookie);
+            const [cookieName, cookieValue] = Object.entries(parsedCookie)[0];
+            const httpOnly = cookie.includes('httponly;');
+
+            cookies().set({
+              name: cookieName,
+              value: cookieValue,
+              httpOnly: httpOnly,
+              maxAge: parseInt(parsedCookie['Max-Age']),
+              path: parsedCookie.path,
+              sameSite:
+                parsedCookie.samesite === 'none'
+                  ? 'none'
+                  : parsedCookie.samesite === 'lax'
+                  ? 'lax'
+                  : parsedCookie.samesite === 'strict'
+                  ? 'strict'
+                  : true,
+              expires: new Date(parsedCookie.expires),
+              secure: true
+            });
+          });
+        }
+
+        if (response.data) {
+          return response.data;
+        } else {
+          return null;
         }
       }
     })
