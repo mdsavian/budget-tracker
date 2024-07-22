@@ -1,6 +1,6 @@
 import { NextAuthConfig } from 'next-auth';
 import CredentialProvider from 'next-auth/providers/credentials';
-import { axiosInstance } from './lib/axios/axios';
+import axiosInstance from './lib/axios/axios';
 import { cookies } from 'next/headers';
 import { parse } from 'cookie';
 
@@ -16,7 +16,7 @@ const authConfig = {
         }
       },
       async authorize(credentials, req) {
-        const response = await axiosInstance().post(
+        const response = await axiosInstance.post(
           '/login',
           {
             email: credentials.email,
