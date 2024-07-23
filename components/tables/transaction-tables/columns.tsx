@@ -3,8 +3,39 @@ import { ColumnDef } from '@tanstack/react-table';
 import { CellAction } from './cell-action';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Transaction } from '@/types';
+import { CreditCard, Check, AlertCircle } from 'lucide-react';
+import { format } from 'date-fns';
+import { formatValue } from '@/lib/utils';
 
-export const columns: ColumnDef<Transaction>[] = [
+type TransactionData = {
+  status: JSX.Element;
+  creditCard: string | JSX.Element;
+  type: string;
+  date: string;
+  description: string;
+  account: string;
+  category: string;
+  amount: string;
+};
+
+export const processData = (transactions: Transaction[]): TransactionData[] => {
+  return transactions.map((trans) => ({
+    status: trans.paid ? (
+      <Check className="text-green-500" />
+    ) : (
+      <AlertCircle className="text-red-500" />
+    ),
+    creditCard: trans.creditCardId ? <CreditCard /> : '',
+    type: trans.transactionType,
+    date: format(new Date(trans.date), 'MM/dd/yyyy'),
+    description: trans.description,
+    account: trans.account,
+    category: trans.category,
+    amount: formatValue(trans.amount)
+  }));
+};
+
+export const columns: ColumnDef<TransactionData>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -24,31 +55,27 @@ export const columns: ColumnDef<Transaction>[] = [
     enableSorting: false,
     enableHiding: false
   },
-
   {
-    accessorKey: 'paid',
-    header: 'Efetivada',
-    cell: (info) => {
-      console.log(info.getValue());
-      return info.getValue() ? 'Sim' : 'Não';
-    },
+    accessorKey: 'status',
+    header: 'Status',
+    cell: (info) => info.getValue(),
     enableSorting: true,
     meta: {
       filterVariant: 'yesNo'
     }
   },
   {
-    accessorKey: 'creditCardId',
+    accessorKey: 'creditCard',
     cell: (info) => info.getValue(),
-    header: 'Cartão',
+    header: 'Credit Card',
     meta: {
       filterVariant: 'yesNo'
     }
   },
   {
-    accessorKey: 'tipo',
+    accessorKey: 'type',
     cell: (info) => info.getValue(),
-    header: 'Tipo',
+    header: 'Type',
     meta: {
       filterVariant: 'tipo'
     }
@@ -57,36 +84,31 @@ export const columns: ColumnDef<Transaction>[] = [
     accessorKey: 'date',
     id: 'date',
     cell: (info) => info.getValue(),
-    header: 'Data'
+    header: 'Date'
   },
   {
     accessorFn: (row) => row.description,
     id: 'description',
-    header: 'Descrição',
+    header: 'Description',
     cell: (info) => info.getValue()
   },
   {
     accessorKey: 'category',
-    header: 'Categoria',
+    header: 'Category',
     meta: {
       filterVariant: 'category'
     }
   },
   {
     accessorKey: 'account',
-    header: 'Conta',
+    header: 'Account',
     meta: {
       filterVariant: 'account'
     }
   },
   {
     accessorKey: 'amount',
-    header: 'Valor'
-  },
-  {
-    accessorKey: 'effectuate',
-    cell: (info) => info.getValue(),
-    header: 'Efetuar'
+    header: 'Amount'
   },
   {
     id: 'actions',

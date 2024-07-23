@@ -27,3 +27,7 @@ export function hasDraggableData<T extends Active | Over>(
 
   return false;
 }
+
+export function formatValue(value: number): string {
+  return value.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
+}

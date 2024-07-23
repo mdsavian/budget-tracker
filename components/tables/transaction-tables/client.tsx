@@ -5,13 +5,13 @@ import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
 import { Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { columns } from './columns';
-import { useEffect, useState } from 'react';
+import { columns, processData } from './columns';
+import { useEffect, useMemo, useState } from 'react';
 import { endOfMonth, format, startOfMonth } from 'date-fns';
-import { Transaction } from '@/types';
 import axiosInstance from '@/lib/axios/axios';
 import { DateRange } from 'react-day-picker';
 import { CalendarDateRangePicker } from '@/components/date-range-picker';
+import { Transaction } from '@/types';
 
 export const TransactionClient: React.FC = () => {
   const router = useRouter();
@@ -42,6 +42,10 @@ export const TransactionClient: React.FC = () => {
     fetchTransactions();
   }, [date]);
 
+  const formattedTransactions = useMemo(() => {
+    return processData(transactions);
+  }, [transactions]);
+
   return (
     <>
       <div className="flex items-start justify-between">
@@ -58,7 +62,7 @@ export const TransactionClient: React.FC = () => {
       <DataTable
         searchKey="description"
         columns={columns}
-        data={transactions}
+        data={formattedTransactions}
       />
     </>
   );
