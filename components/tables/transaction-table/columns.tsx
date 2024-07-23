@@ -6,20 +6,7 @@ import { Transaction } from '@/types';
 import { CreditCard, Check, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { formatValue } from '@/lib/utils';
-
-type TransactionData = {
-  paid: boolean;
-  status: JSX.Element;
-  creditCard: string | JSX.Element;
-  creditCardId: string;
-  type: string;
-  date: string;
-  description: string;
-  account: string;
-  category: string;
-  amount: number;
-  amountFormatted: string;
-};
+import { TransactionData } from './types';
 
 export const processData = (transactions: Transaction[]): TransactionData[] => {
   return transactions.map((trans) => {
@@ -69,7 +56,7 @@ export const columns: ColumnDef<TransactionData>[] = [
     cell: (info) => info.getValue(),
     enableSorting: true,
     sortingFn: (a, b) => {
-      return a.original.paid === b.original.paid ? 0 : a.original.paid ? 1 : -1;
+      return a.original.paid === b.original.paid ? 0 : a.original.paid ? -1 : 1;
     }
   },
   {
@@ -77,8 +64,8 @@ export const columns: ColumnDef<TransactionData>[] = [
     cell: (info) => info.getValue(),
     header: 'Credit Card',
     sortingFn: (a, b) => {
-      const aValue = a.original.creditCardId === null ? false : true;
-      const bValue = b.original.creditCardId === null ? false : true;
+      const aValue = a.original.creditCardId === null ? true : false;
+      const bValue = b.original.creditCardId === null ? true : false;
       return aValue === bValue ? 0 : aValue ? 1 : -1;
     },
     meta: {
