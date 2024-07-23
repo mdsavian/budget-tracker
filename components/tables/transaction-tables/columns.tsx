@@ -8,31 +8,39 @@ import { format } from 'date-fns';
 import { formatValue } from '@/lib/utils';
 
 type TransactionData = {
+  paid: boolean;
   status: JSX.Element;
   creditCard: string | JSX.Element;
+  creditCardId: string;
   type: string;
   date: string;
   description: string;
   account: string;
   category: string;
-  amount: string;
+  amount: number;
+  amountFormatted: string;
 };
 
 export const processData = (transactions: Transaction[]): TransactionData[] => {
-  return transactions.map((trans) => ({
-    status: trans.paid ? (
-      <Check className="text-green-500" />
-    ) : (
-      <AlertCircle className="text-red-500" />
-    ),
-    creditCard: trans.creditCardId ? <CreditCard /> : '',
-    type: trans.transactionType,
-    date: format(new Date(trans.date), 'MM/dd/yyyy'),
-    description: trans.description,
-    account: trans.account,
-    category: trans.category,
-    amount: formatValue(trans.amount)
-  }));
+  return transactions.map((trans) => {
+    return {
+      paid: trans.paid,
+      status: trans.paid ? (
+        <Check className="text-green-500" />
+      ) : (
+        <AlertCircle className="text-red-500" />
+      ),
+      creditCardId: trans.creditCardId,
+      creditCard: trans.creditCardId ? <CreditCard /> : '',
+      type: trans.transactionType,
+      date: format(new Date(trans.date.replace('Z', '')), 'dd/MM/yyyy'),
+      description: trans.description,
+      account: trans.account,
+      category: trans.category,
+      amount: trans.amount,
+      amountFormatted: formatValue(trans.amount)
+    };
+  });
 };
 
 export const columns: ColumnDef<TransactionData>[] = [
@@ -60,14 +68,19 @@ export const columns: ColumnDef<TransactionData>[] = [
     header: 'Status',
     cell: (info) => info.getValue(),
     enableSorting: true,
-    meta: {
-      filterVariant: 'yesNo'
+    sortingFn: (a, b) => {
+      return a.original.paid === b.original.paid ? 0 : a.original.paid ? 1 : -1;
     }
   },
   {
     accessorKey: 'creditCard',
     cell: (info) => info.getValue(),
     header: 'Credit Card',
+    sortingFn: (a, b) => {
+      const aValue = a.original.creditCardId === null ? false : true;
+      const bValue = b.original.creditCardId === null ? false : true;
+      return aValue === bValue ? 0 : aValue ? 1 : -1;
+    },
     meta: {
       filterVariant: 'yesNo'
     }
@@ -90,6 +103,7 @@ export const columns: ColumnDef<TransactionData>[] = [
     accessorFn: (row) => row.description,
     id: 'description',
     header: 'Description',
+    enableSorting: true,
     cell: (info) => info.getValue()
   },
   {
@@ -107,8 +121,11 @@ export const columns: ColumnDef<TransactionData>[] = [
     }
   },
   {
-    accessorKey: 'amount',
-    header: 'Amount'
+    accessorKey: 'amountFormatted',
+    header: 'Amount',
+    sortingFn: (a, b) => {
+      return a.original.amount - b.original.amount;
+    }
   },
   {
     id: 'actions',
