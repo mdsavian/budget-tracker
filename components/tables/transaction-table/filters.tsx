@@ -61,6 +61,7 @@ const Filter: React.FC<FilterProps> = ({ column, labels }) => {
   ) : filterVariant === 'boolean' ? (
     <div className="flex space-x-2">
       <Select
+        defaultValue="all"
         onValueChange={(value) => {
           if (value === 'all') column.setFilterValue(null);
           if (value === 'true') column.setFilterValue(true);
@@ -116,8 +117,13 @@ const Filter: React.FC<FilterProps> = ({ column, labels }) => {
     </div>
   ) : filterVariant === 'account' ? (
     <Select
+      defaultValue="all"
       onValueChange={(value) => {
-        if (value === 'all') column.setFilterValue(null);
+        if (value === 'all') {
+          column.setFilterValue(null);
+        } else {
+          column.setFilterValue(value);
+        }
       }}
       value={columnFilterValue?.toString()}
     >
@@ -137,8 +143,13 @@ const Filter: React.FC<FilterProps> = ({ column, labels }) => {
     </Select>
   ) : filterVariant === 'category' ? (
     <Select
+      defaultValue="all"
       onValueChange={(value) => {
-        if (value === 'all') column.setFilterValue(null);
+        if (value === 'all') {
+          column.setFilterValue(null);
+        } else {
+          column.setFilterValue(value);
+        }
       }}
       value={columnFilterValue?.toString()}
     >
@@ -156,9 +167,10 @@ const Filter: React.FC<FilterProps> = ({ column, labels }) => {
         </SelectGroup>
       </SelectContent>
     </Select>
-  ) : filterVariant === 'type' ? (
+  ) : filterVariant === 'transactionType' ? (
     <div className="flex space-x-2">
       <Select
+        defaultValue="all"
         onValueChange={(value) => {
           if (value === 'All') {
             column.setFilterValue(null);

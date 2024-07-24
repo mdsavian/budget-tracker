@@ -82,7 +82,7 @@ export const columns: ColumnDef<TransactionData>[] = [
     cell: (info) => info.getValue(),
     header: 'Type',
     meta: {
-      filterVariant: 'type'
+      filterVariant: 'transactionType'
     }
   },
   {
