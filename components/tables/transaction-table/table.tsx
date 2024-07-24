@@ -18,12 +18,21 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
-import { Input } from '@/components/ui//input';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { ArrowDown, ArrowUp } from 'lucide-react';
+import { ArrowDown, ArrowUp, Scroll } from 'lucide-react';
 import { TransactionData } from './types';
 import { columns } from './columns';
 import Filter from './filters';
+import { RecentSales } from '@/components/recent-sales';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card';
+import { formatValue } from '@/lib/utils';
+import { CategoryTotals } from './categoryTotals';
 interface DataTableProps {
   data: TransactionData[];
 }
@@ -53,12 +62,11 @@ export function TransactionTable({ data }: DataTableProps) {
     return { categoryLabels, accountLabels };
   }, [data]);
 
-  /* this can be used to get the selectedrows 
-  console.log("value", table.getFilteredSelectedRowModel()); */
+  const filteredRows = table.getFilteredRowModel().rows;
 
   return (
-    <>
-      <ScrollArea className="h-[calc(80vh-220px)] rounded-md border">
+    <div className="column flex gap-8">
+      <ScrollArea className="round-md h-[calc(80vh-220px)] border">
         <Table className="relative">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -139,6 +147,15 @@ export function TransactionTable({ data }: DataTableProps) {
         </Table>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
-    </>
+
+      <ScrollArea className="round-md h-[calc(80vh-220px)] border">
+        <CardHeader>
+          <CardTitle>Recent Sales</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <CategoryTotals filteredRows={filteredRows} />
+        </CardContent>
+      </ScrollArea>
+    </div>
   );
 }
