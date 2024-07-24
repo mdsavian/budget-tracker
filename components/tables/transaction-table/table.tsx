@@ -1,6 +1,8 @@
 'use client';
 
+import { useMemo, useState } from 'react';
 import {
+  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -21,19 +23,35 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import { TransactionData } from './types';
 import { columns } from './columns';
-
+import Filter from './filters';
 interface DataTableProps {
   data: TransactionData[];
 }
 
 export function TransactionTable({ data }: DataTableProps) {
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
   const table = useReactTable({
     data,
     columns,
+    state: {
+      columnFilters
+    },
+    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel()
   });
+
+  const labels = useMemo(() => {
+    const categoryLabels = Array.from(
+      new Set(data?.map((trans) => trans.category))
+    );
+    const accountLabels = Array.from(
+      new Set(data?.map((trans) => trans.account))
+    );
+    return { categoryLabels, accountLabels };
+  }, [data]);
 
   /* this can be used to get the selectedrows 
   console.log("value", table.getFilteredSelectedRowModel()); */
@@ -48,17 +66,6 @@ export function TransactionTable({ data }: DataTableProps) {
           }
           onChange={(event) =>
             table.getColumn('description')?.setFilterValue(event.target.value)
-          }
-          className="w-full md:max-w-sm"
-        />
-
-        <Input
-          placeholder={`Search category...`}
-          value={
-            (table.getColumn('category')?.getFilterValue() as string) ?? ''
-          }
-          onChange={(event) =>
-            table.getColumn('category')?.setFilterValue(event.target.value)
           }
           className="w-full md:max-w-sm"
         />
@@ -102,10 +109,7 @@ export function TransactionTable({ data }: DataTableProps) {
                           </div>
                           {header.column.getCanFilter() ? (
                             <div>
-                              {/* <Filter
-                                column={header.column}
-                                categoryLabels={categoryLabels}
-                              /> */}
+                              <Filter column={header.column} labels={labels} />
                             </div>
                           ) : null}
                         </>

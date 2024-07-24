@@ -1,7 +1,6 @@
 export type TransactionData = {
   paid: boolean;
-  status: JSX.Element;
-  creditCard: string | JSX.Element;
+  creditCard: boolean;
   creditCardId: string;
   type: string;
   date: string;
@@ -9,5 +8,7 @@ export type TransactionData = {
   account: string;
   category: string;
   amount: number;
-  amountFormatted: string;
 };
+
+// TODO change this to english
+export type transactionType = 'Receita' | 'Despesa';
