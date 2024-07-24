@@ -12,20 +12,14 @@ export const processData = (transactions: Transaction[]): TransactionData[] => {
   return transactions.map((trans) => {
     return {
       paid: trans.paid,
-      status: trans.paid ? (
-        <Check className="text-green-500" />
-      ) : (
-        <AlertCircle className="text-red-500" />
-      ),
       creditCardId: trans.creditCardId,
-      creditCard: trans.creditCardId ? <CreditCard /> : '',
+      creditCard: trans.creditCardId !== null,
       type: trans.transactionType,
       date: format(new Date(trans.date.replace('Z', '')), 'dd/MM/yyyy'),
       description: trans.description,
       account: trans.account,
       category: trans.category,
-      amount: trans.amount,
-      amountFormatted: formatValue(trans.amount)
+      amount: trans.amount
     };
   });
 };
@@ -51,17 +45,28 @@ export const columns: ColumnDef<TransactionData>[] = [
     enableHiding: false
   },
   {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: (info) => info.getValue(),
+    accessorKey: 'paid',
+    header: 'Paid',
+    cell: (info) => {
+      return info.getValue() ? (
+        <Check className="text-green-500" />
+      ) : (
+        <AlertCircle className="text-red-500" />
+      );
+    },
     enableSorting: true,
     sortingFn: (a, b) => {
       return a.original.paid === b.original.paid ? 0 : a.original.paid ? -1 : 1;
+    },
+    meta: {
+      filterVariant: 'boolean'
     }
   },
   {
     accessorKey: 'creditCard',
-    cell: (info) => info.getValue(),
+    cell: (info) => {
+      return info.getValue() ? <CreditCard /> : '';
+    },
     header: 'Credit Card',
     sortingFn: (a, b) => {
       const aValue = a.original.creditCardId === null ? true : false;
@@ -69,7 +74,7 @@ export const columns: ColumnDef<TransactionData>[] = [
       return aValue === bValue ? 0 : aValue ? 1 : -1;
     },
     meta: {
-      filterVariant: 'yesNo'
+      filterVariant: 'boolean'
     }
   },
   {
@@ -77,14 +82,17 @@ export const columns: ColumnDef<TransactionData>[] = [
     cell: (info) => info.getValue(),
     header: 'Type',
     meta: {
-      filterVariant: 'tipo'
+      filterVariant: 'type'
     }
   },
   {
     accessorKey: 'date',
     id: 'date',
     cell: (info) => info.getValue(),
-    header: 'Date'
+    header: 'Date',
+    meta: {
+      filterVariant: 'text'
+    }
   },
   {
     accessorFn: (row) => row.description,
@@ -108,10 +116,14 @@ export const columns: ColumnDef<TransactionData>[] = [
     }
   },
   {
-    accessorKey: 'amountFormatted',
+    accessorKey: 'amount',
     header: 'Amount',
+    cell: (info) => formatValue(info.getValue() as number),
     sortingFn: (a, b) => {
       return a.original.amount - b.original.amount;
+    },
+    meta: {
+      filterVariant: 'amount'
     }
   },
   {

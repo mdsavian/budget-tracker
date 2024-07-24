@@ -19,18 +19,6 @@ import { Button } from '@/components/ui/button';
 import axios from 'axios';
 import { CalendarDateRangePicker } from './dateRangePicker';
 
-declare module '@tanstack/react-table' {
-  interface ColumnMeta<TData extends RowData, TValue> {
-    filterVariant?:
-      | 'tipo'
-      | 'text'
-      | 'amount'
-      | 'account'
-      | 'category'
-      | 'yesNo';
-  }
-}
-
 export default function TransactionTable({
   transactions,
   categoryLabels
