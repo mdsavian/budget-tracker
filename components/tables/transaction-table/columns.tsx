@@ -99,7 +99,10 @@ export const columns: ColumnDef<TransactionData>[] = [
     id: 'description',
     header: 'Description',
     enableSorting: true,
-    cell: (info) => info.getValue()
+    cell: (info) => info.getValue(),
+    meta: {
+      filterVariant: 'text'
+    }
   },
   {
     accessorKey: 'category',

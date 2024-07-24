@@ -58,18 +58,6 @@ export function TransactionTable({ data }: DataTableProps) {
 
   return (
     <>
-      <div className="flex items-start gap-8">
-        <Input
-          placeholder={`Search description...`}
-          value={
-            (table.getColumn('description')?.getFilterValue() as string) ?? ''
-          }
-          onChange={(event) =>
-            table.getColumn('description')?.setFilterValue(event.target.value)
-          }
-          className="w-full md:max-w-sm"
-        />
-      </div>
       <ScrollArea className="h-[calc(80vh-220px)] rounded-md border">
         <Table className="relative">
           <TableHeader>
