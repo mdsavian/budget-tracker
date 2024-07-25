@@ -19,19 +19,11 @@ import {
   TableRow
 } from '@/components/ui/table';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { ArrowDown, ArrowUp, Scroll } from 'lucide-react';
+import { ArrowDown, ArrowUp } from 'lucide-react';
 import { TransactionData } from './types';
 import { columns } from './columns';
 import Filter from './filters';
-import { RecentSales } from '@/components/recent-sales';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
-import { formatValue } from '@/lib/utils';
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CategoryTotals } from './categoryTotals';
 interface DataTableProps {
   data: TransactionData[];

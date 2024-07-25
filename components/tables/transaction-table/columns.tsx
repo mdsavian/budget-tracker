@@ -46,7 +46,7 @@ export const columns: ColumnDef<TransactionData>[] = [
   },
   {
     accessorKey: 'paid',
-    header: 'Paid',
+    header: 'Effectuated',
     cell: (info) => {
       return info.getValue() ? (
         <Check className="text-green-500" />

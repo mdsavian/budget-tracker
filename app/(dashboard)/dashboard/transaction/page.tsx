@@ -44,9 +44,7 @@ const TransactionPage: React.FC = () => {
     fetchTransactions();
   }, [date]);
 
-  const formattedTransactions = useMemo(() => {
-    return processData(transactions);
-  }, [transactions]);
+  const formattedTransactions = processData(transactions);
 
   return (
     <div className="flex-1 space-y-4  p-4 pt-6 md:p-8">
