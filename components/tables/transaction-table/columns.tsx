@@ -11,6 +11,7 @@ import { TransactionData } from './types';
 export const processData = (transactions: Transaction[]): TransactionData[] => {
   return transactions.map((trans) => {
     return {
+      id: trans.id,
       paid: trans.paid,
       creditCardId: trans.creditCardId,
       creditCard: trans.creditCardId !== null,

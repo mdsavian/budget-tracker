@@ -1,4 +1,5 @@
 export type TransactionData = {
+  id: string;
   paid: boolean;
   creditCard: boolean;
   creditCardId: string;
