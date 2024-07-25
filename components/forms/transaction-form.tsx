@@ -1,6 +1,6 @@
 'use client';
 import * as z from 'zod';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
@@ -37,19 +37,18 @@ const formSchema = z.object({
   description: z
     .string()
     .min(3, { message: 'Description must be at least 3 characters' }),
-  category: z.string().min(1, { message: 'Please select a category' })
+  categoryId: z.string().min(1, { message: 'Please select a category' }),
+  accountId: z.string().min(1, { message: 'Please select a account' })
 });
 
 type ProductFormValues = z.infer<typeof formSchema>;
 
 interface ProductFormProps {
   initialData: any | null;
-  categories: any;
 }
 
 export const TransactionForm: React.FC<ProductFormProps> = ({
-  initialData,
-  categories
+  initialData
 }) => {
   const router = useRouter();
   const { toast } = useToast();
@@ -59,6 +58,25 @@ export const TransactionForm: React.FC<ProductFormProps> = ({
     ? 'Edit a transaction.'
     : 'Add a new transaction';
   const action = initialData ? 'Save changes' : 'Create';
+
+  const [categories, setCategories] = useState<any>([]);
+  const [accounts, setAccounts] = useState<any>([]);
+
+  useEffect(() => {
+    const fetchDatas = async () => {
+      const categoryPromise = axiosInstance.get('/category');
+      const accountPromise = axiosInstance.get('/account');
+
+      const [categoryRes, accountRes] = await Promise.all([
+        categoryPromise,
+        accountPromise
+      ]);
+      setCategories(categoryRes.data);
+      setAccounts(accountRes.data);
+    };
+
+    fetchDatas();
+  }, []);
 
   const defaultValues = initialData
     ? initialData
@@ -189,7 +207,40 @@ export const TransactionForm: React.FC<ProductFormProps> = ({
             />
             <FormField
               control={form.control}
-              name="category"
+              name="accountId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Account</FormLabel>
+                  <Select
+                    disabled={loading}
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue
+                          defaultValue={field.value}
+                          placeholder="Select a account"
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {/* @ts-ignore  */}
+                      {accounts.map((acc) => (
+                        <SelectItem key={acc.id} value={acc.id}>
+                          {acc.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="categoryId"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Category</FormLabel>
@@ -210,8 +261,8 @@ export const TransactionForm: React.FC<ProductFormProps> = ({
                     <SelectContent>
                       {/* @ts-ignore  */}
                       {categories.map((category) => (
-                        <SelectItem key={category._id} value={category._id}>
-                          {category.name}
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.description}
                         </SelectItem>
                       ))}
                     </SelectContent>
