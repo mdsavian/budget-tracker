@@ -52,7 +52,7 @@ const TransactionPage: React.FC = () => {
         <Heading title="Transactions" description="" />
         <Button
           className="text-xs md:text-sm"
-          onClick={() => router.push(`/dashboard/transacion/new`)}
+          onClick={() => router.push(`/dashboard/transaction/new`)}
         >
           <Plus className="mr-2 h-4 w-4" /> Add New
         </Button>
