@@ -3,10 +3,18 @@ import { ColumnDef } from '@tanstack/react-table';
 import { CellAction } from './cell-action';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Transaction } from '@/types';
-import { CreditCard, Check, AlertCircle } from 'lucide-react';
+import {
+  CreditCard,
+  Check,
+  AlertCircle,
+  CheckCheckIcon,
+  CheckCircle
+} from 'lucide-react';
 import { format } from 'date-fns';
 import { formatValue } from '@/lib/utils';
 import { TransactionData } from './types';
+import { Button } from '@/components/ui/button';
+import EffectuateTransactionButton from './effectuateTransactionButton';
 
 export const processData = (transactions: Transaction[]): TransactionData[] => {
   return transactions.map((trans) => {
@@ -128,6 +136,14 @@ export const columns: ColumnDef<TransactionData>[] = [
     },
     meta: {
       filterVariant: 'amount'
+    }
+  },
+  {
+    id: 'effectuate',
+    cell: (cell) => {
+      if (!cell.row.original.paid) {
+        return <EffectuateTransactionButton id={cell.row.original.id} />;
+      }
     }
   },
   {

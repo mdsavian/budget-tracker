@@ -1,6 +1,6 @@
 import { NextAuthConfig } from 'next-auth';
 import CredentialProvider from 'next-auth/providers/credentials';
-import axiosInstance from './lib/axios/axios';
+import axiosInstance from '@/lib/axios';
 import { cookies } from 'next/headers';
 import { parse } from 'cookie';
 
