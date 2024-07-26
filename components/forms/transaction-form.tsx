@@ -24,9 +24,9 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-// import FileUpload from "@/components/FileUpload";
 import { useToast } from '../ui/use-toast';
 import axiosInstance from '@/lib/axios/axios';
+import { Switch } from '../ui/switch';
 
 const formSchema = z.object({
   amount: z.coerce
@@ -38,7 +38,8 @@ const formSchema = z.object({
     .string()
     .min(3, { message: 'Description must be at least 3 characters' }),
   categoryId: z.string().min(1, { message: 'Please select a category' }),
-  accountId: z.string().min(1, { message: 'Please select a account' })
+  accountId: z.string().min(1, { message: 'Please select a account' }),
+  creditCardId: z.string()
 });
 
 type ProductFormValues = z.infer<typeof formSchema>;
@@ -61,18 +62,22 @@ export const TransactionForm: React.FC<ProductFormProps> = ({
 
   const [categories, setCategories] = useState<any>([]);
   const [accounts, setAccounts] = useState<any>([]);
+  const [cards, setCards] = useState<any>([]);
 
   useEffect(() => {
     const fetchDatas = async () => {
       const categoryPromise = axiosInstance.get('/category');
       const accountPromise = axiosInstance.get('/account');
+      const cardPromise = axiosInstance.get('/creditcard');
 
-      const [categoryRes, accountRes] = await Promise.all([
+      const [categoryRes, accountRes, cardRes] = await Promise.all([
         categoryPromise,
-        accountPromise
+        accountPromise,
+        cardPromise
       ]);
       setCategories(categoryRes.data);
       setAccounts(accountRes.data);
+      setCards(cardRes.data);
     };
 
     fetchDatas();
@@ -159,7 +164,7 @@ export const TransactionForm: React.FC<ProductFormProps> = ({
                 <FormItem className="space-x-2">
                   <FormLabel>Paid</FormLabel>
                   <FormControl>
-                    <Checkbox
+                    <Switch
                       checked={field.value}
                       onCheckedChange={() => field.onChange(!field.value)}
                       disabled={loading}
@@ -263,6 +268,40 @@ export const TransactionForm: React.FC<ProductFormProps> = ({
                       {categories.map((category) => (
                         <SelectItem key={category.id} value={category.id}>
                           {category.description}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="creditCardId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Credit Card</FormLabel>
+                  <Select
+                    disabled={loading}
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue
+                          defaultValue={field.value}
+                          placeholder="Select a credit card"
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {/* @ts-ignore  */}
+                      {cards.map((card) => (
+                        <SelectItem key={card.id} value={card.id}>
+                          {card.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
