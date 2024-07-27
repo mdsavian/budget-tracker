@@ -12,6 +12,28 @@ export type Transaction = {
   amount: number;
   paid: boolean;
 };
+
+export type DashboardData = {
+  transactions: Transaction[];
+  totalCredit: number;
+  totalDebit: number;
+  totalCreditCard: number;
+  totalDebitUnpaid: number;
+  categoryTotals: CategoryTotal[];
+  accounts: Account[];
+};
+
+export type Account = {
+  name: string;
+  id: string;
+  balance: number;
+};
+
+export type CategoryTotal = {
+  name: string;
+  total: number;
+};
+
 export interface NavItem {
   title: string;
   href?: string;
