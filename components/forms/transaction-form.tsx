@@ -23,24 +23,55 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '../ui/use-toast';
-import axiosInstance from '@/lib/axios/axios';
+import axiosInstance from '@/lib/axios';
 import { Switch } from '../ui/switch';
 
-const formSchema = z.object({
-  amount: z.coerce
-    .number()
-    .min(1, { message: 'Amount should be higher than 0' }),
-  paid: z.boolean().default(false),
-  date: z.string(),
-  description: z
-    .string()
-    .min(3, { message: 'Description must be at least 3 characters' }),
-  categoryId: z.string().min(1, { message: 'Please select a category' }),
-  accountId: z.string().min(1, { message: 'Please select a account' }),
-  creditCardId: z.string()
-});
+const formSchema = z
+  .object({
+    amount: z.coerce
+      .number()
+      .min(1, { message: 'Amount should be higher than 0' }),
+    paid: z.boolean().default(false),
+    fixed: z.boolean().default(false),
+    date: z.string(),
+    description: z
+      .string()
+      .min(3, { message: 'Description must be at least 3 characters' }),
+    categoryId: z.string().min(1, { message: 'Please select a category' }),
+    accountId: z.string().min(1, { message: 'Please select a account' }),
+    creditCardId: z.string().optional(),
+    hasInstallments: z.boolean().optional().default(false),
+    installmentsNumber: z.coerce.number().optional()
+  })
+  .refine(
+    (schema) => {
+      if (
+        schema.hasInstallments &&
+        schema.installmentsNumber !== undefined &&
+        schema.installmentsNumber < 2
+      ) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: 'Please select the correct number of installments (>=2)',
+      path: ['installmentsNumber']
+    }
+  )
+  .refine(
+    (schema) => {
+      if (schema.fixed && schema.hasInstallments) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "You can't have fixed and installments at the same time",
+      path: ['fixed']
+    }
+  );
 
 type ProductFormValues = z.infer<typeof formSchema>;
 
@@ -83,9 +114,11 @@ export const TransactionForm: React.FC<ProductFormProps> = ({
     fetchDatas();
   }, []);
 
+  // TODO fill default values
   const defaultValues = initialData
     ? initialData
     : {
+        date: new Date().toISOString().split('T')[0],
         amount: 0,
         description: '',
         price: 0,
@@ -100,9 +133,16 @@ export const TransactionForm: React.FC<ProductFormProps> = ({
 
   const onSubmit = async (data: ProductFormValues) => {
     try {
-      console.log('entrei', { data });
-
       setLoading(true);
+
+      if (data.creditCardId) {
+        const res = await axiosInstance.post(
+          `/transaction/expense/creditcard`,
+          data
+        );
+        console.log('transaction credit card', res);
+        return;
+      }
       if (initialData) {
         // await axios.post(`/api/transactions/edit-transaction/${initialData._id}`, data);
       } else {
@@ -163,6 +203,23 @@ export const TransactionForm: React.FC<ProductFormProps> = ({
               render={({ field }) => (
                 <FormItem className="space-x-2">
                   <FormLabel>Paid</FormLabel>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={() => field.onChange(!field.value)}
+                      disabled={loading}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="fixed"
+              render={({ field }) => (
+                <FormItem className="space-x-2">
+                  <FormLabel>Recurring</FormLabel>
                   <FormControl>
                     <Switch
                       checked={field.value}
@@ -306,6 +363,43 @@ export const TransactionForm: React.FC<ProductFormProps> = ({
                       ))}
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="hasInstallments"
+              render={({ field }) => (
+                <FormItem className="space-x-2">
+                  <FormLabel>Installment</FormLabel>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={() => {
+                        field.onChange(!field.value);
+                        form.setValue('installmentsNumber', 0);
+                      }}
+                      disabled={loading}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="installmentsNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      disabled={form.getValues().hasInstallments === false}
+                      type="number"
+                      placeholder="2"
+                      {...field}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
