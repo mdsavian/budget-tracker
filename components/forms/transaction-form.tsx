@@ -42,14 +42,14 @@ const formSchema = z
     accountId: z.string().min(1, { message: 'Please select a account' }),
     creditCardId: z.string().optional(),
     hasInstallments: z.boolean().optional().default(false),
-    installmentsNumber: z.coerce.number().optional()
+    installments: z.coerce.number().optional()
   })
   .refine(
     (schema) => {
       if (
         schema.hasInstallments &&
-        schema.installmentsNumber !== undefined &&
-        schema.installmentsNumber < 2
+        schema.installments !== undefined &&
+        schema.installments < 2
       ) {
         return false;
       }
@@ -57,7 +57,7 @@ const formSchema = z
     },
     {
       message: 'Please select the correct number of installments (>=2)',
-      path: ['installmentsNumber']
+      path: ['installments']
     }
   )
   .refine(
@@ -378,7 +378,7 @@ export const TransactionForm: React.FC<ProductFormProps> = ({
                       checked={field.value}
                       onCheckedChange={() => {
                         field.onChange(!field.value);
-                        form.setValue('installmentsNumber', 0);
+                        form.setValue('installments', 0);
                       }}
                       disabled={loading}
                     />
@@ -389,7 +389,7 @@ export const TransactionForm: React.FC<ProductFormProps> = ({
             />
             <FormField
               control={form.control}
-              name="installmentsNumber"
+              name="installments"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
