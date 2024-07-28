@@ -15,6 +15,7 @@ export const processData = (transactions: Transaction[]): TransactionData[] => {
       id: trans.id,
       paid: trans.paid,
       recurringId: trans.recurringTransactionId,
+      recurring: trans.recurringTransactionId !== null,
       creditCardId: trans.creditCardId,
       creditCard: trans.creditCardId !== null,
       type: trans.transactionType,
@@ -66,7 +67,7 @@ export const columns: ColumnDef<TransactionData>[] = [
     }
   },
   {
-    accessorKey: 'recurringId',
+    accessorKey: 'recurring',
     header: 'Recurring',
     cell: (info) => {
       return info.getValue() ? <RefreshCw /> : null;
@@ -81,7 +82,6 @@ export const columns: ColumnDef<TransactionData>[] = [
       filterVariant: 'boolean'
     }
   },
-
   {
     accessorKey: 'creditCard',
     cell: (info) => {
@@ -129,7 +129,8 @@ export const columns: ColumnDef<TransactionData>[] = [
     header: 'Category',
     meta: {
       filterVariant: 'category'
-    }
+    },
+    filterFn: 'equalsString'
   },
   {
     accessorKey: 'account',
