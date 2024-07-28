@@ -45,6 +45,7 @@ export function TransactionTable({ data }: DataTableProps) {
   });
 
   const labels = useMemo(() => {
+    
     const categoryLabels = Array.from(
       new Set(data?.map((trans) => trans.category))
     );

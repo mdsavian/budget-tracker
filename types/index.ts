@@ -2,10 +2,13 @@ import { Icons } from '@/components/icons';
 
 export type Transaction = {
   id: string;
+  accountId: string;
   account: string;
   creditCardId: string;
   creditCard: string;
+  categoryId: string;
   category: string;
+  recurringTransactionId: string;
   transactionType: string;
   date: string;
   description: string;

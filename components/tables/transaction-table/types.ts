@@ -9,6 +9,7 @@ export type TransactionData = {
   account: string;
   category: string;
   amount: number;
+  recurringId: string;
 };
 
 // TODO change this to english

@@ -3,17 +3,10 @@ import { ColumnDef } from '@tanstack/react-table';
 import { CellAction } from './cell-action';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Transaction } from '@/types';
-import {
-  CreditCard,
-  Check,
-  AlertCircle,
-  CheckCheckIcon,
-  CheckCircle
-} from 'lucide-react';
+import { CreditCard, Check, AlertCircle, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
 import { formatValue } from '@/lib/utils';
 import { TransactionData } from './types';
-import { Button } from '@/components/ui/button';
 import EffectuateTransactionButton from './effectuateTransactionButton';
 
 export const processData = (transactions: Transaction[]): TransactionData[] => {
@@ -21,6 +14,7 @@ export const processData = (transactions: Transaction[]): TransactionData[] => {
     return {
       id: trans.id,
       paid: trans.paid,
+      recurringId: trans.recurringTransactionId,
       creditCardId: trans.creditCardId,
       creditCard: trans.creditCardId !== null,
       type: trans.transactionType,
@@ -71,6 +65,23 @@ export const columns: ColumnDef<TransactionData>[] = [
       filterVariant: 'boolean'
     }
   },
+  {
+    accessorKey: 'recurringId',
+    header: 'Recurring',
+    cell: (info) => {
+      return info.getValue() ? <RefreshCw /> : null;
+    },
+    enableSorting: true,
+    sortingFn: (a, b) => {
+      const aValue = a.original.recurringId === null ? true : false;
+      const bValue = b.original.recurringId === null ? true : false;
+      return aValue === bValue ? 0 : aValue ? 1 : -1;
+    },
+    meta: {
+      filterVariant: 'boolean'
+    }
+  },
+
   {
     accessorKey: 'creditCard',
     cell: (info) => {
