@@ -154,7 +154,7 @@ export const columns: ColumnDef<TransactionData>[] = [
     id: 'effectuate',
     cell: (cell) => {
       if (!cell.row.original.paid) {
-        return <EffectuateTransactionButton id={cell.row.original.id} />;
+        return <EffectuateTransactionButton row={cell.row.original} />;
       }
     }
   },
