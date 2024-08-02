@@ -43,7 +43,10 @@ const formSchema = z
     creditCardId: z.string().optional(),
     hasInstallments: z.boolean().optional(),
     installments: z.coerce.number().optional(),
-    updateRecurring: z.boolean().optional()
+    updateRecurring: z.boolean().optional(),
+    transactionType: z
+      .string()
+      .min(1, { message: 'Please select a transaction type' })
   })
   .refine(
     (schema) => {
@@ -127,7 +130,8 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
         categoryId: initialData.categoryId,
         accountId: initialData.accountId,
         creditCardId: initialData.creditCardId ? initialData.creditCardId : '',
-        updateRecurring: false
+        updateRecurring: false,
+        transactionType: initialData.transactionType
       }
     : {
         fixed: false,
@@ -140,7 +144,8 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
         price: 0,
         paid: false,
         updaterecurring: false,
-        category: ''
+        category: '',
+        transactionType: 'Expense'
       };
 
   const form = useForm<TransactionFormValues>({
@@ -148,6 +153,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     defaultValues,
     values: defaultValues
   });
+  const isExpense = form.getValues().transactionType === 'Expense';
 
   const onSubmit = async (data: TransactionFormValues) => {
     try {
@@ -165,11 +171,22 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
           amount: data.amount,
           updateRecurringTransaction: data.updateRecurring ?? false
         });
-      } else if (data.creditCardId) {
-        await axiosInstance.post(`/transaction/expense/creditcard`, data);
+      } else if (isExpense) {
+        if (data.creditCardId) {
+          await axiosInstance.post(`/transaction/expense/creditcard`, data);
+        } else {
+          await axiosInstance.post(`/transaction/expense`, data);
+        }
       } else {
-        await axiosInstance.post(`/transaction/expense`, data);
+        await axiosInstance.post(`/transaction/income`, {
+          accountId: data.accountId,
+          categoryId: data.categoryId,
+          date: data.date,
+          description: data.description,
+          amount: data.amount
+        });
       }
+
       toast({
         variant: 'default',
         title: 'Success',
@@ -197,6 +214,41 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full space-y-8"
         >
+          {/* TODO this will be moved for the own page */}
+          <FormField
+            control={form.control}
+            name="transactionType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Transaction Type</FormLabel>
+                <Select
+                  disabled={loading}
+                  onValueChange={field.onChange}
+                  value={field.value}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue
+                        defaultValue={field.value}
+                        placeholder="Transaction type"
+                      />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem key="expense" value="Expense">
+                      Expense
+                    </SelectItem>
+                    <SelectItem key="income" value="Income">
+                      Income
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <div className="gap-8 md:grid md:grid-cols-3">
             <FormField
               control={form.control}
@@ -233,42 +285,45 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                 </FormItem>
               )}
             />
+            {isExpense && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="updateRecurring"
+                  render={({ field }) => (
+                    <FormItem className="space-x-2">
+                      <FormLabel>Update Recurring</FormLabel>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={() => field.onChange(!field.value)}
+                          disabled={loading}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="updateRecurring"
-              render={({ field }) => (
-                <FormItem className="space-x-2">
-                  <FormLabel>Update Recurring</FormLabel>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={() => field.onChange(!field.value)}
-                      disabled={loading}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="fixed"
-              render={({ field }) => (
-                <FormItem className="space-x-2">
-                  <FormLabel>Recurring</FormLabel>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={() => field.onChange(!field.value)}
-                      disabled={loading}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name="fixed"
+                  render={({ field }) => (
+                    <FormItem className="space-x-2">
+                      <FormLabel>Recurring</FormLabel>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={() => field.onChange(!field.value)}
+                          disabled={loading}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
 
             <FormField
               control={form.control}
@@ -372,76 +427,80 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="creditCardId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Credit Card</FormLabel>
-                  <Select
-                    disabled={loading}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          defaultValue={field.value}
-                          placeholder="Select a credit card"
+            {isExpense && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="creditCardId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Credit Card</FormLabel>
+                      <Select
+                        disabled={loading}
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue
+                              defaultValue={field.value}
+                              placeholder="Select a credit card"
+                            />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {/* @ts-ignore  */}
+                          {cards.map((card) => (
+                            <SelectItem key={card.id} value={card.id}>
+                              {card.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="hasInstallments"
+                  render={({ field }) => (
+                    <FormItem className="space-x-2">
+                      <FormLabel>Installment</FormLabel>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={() => {
+                            field.onChange(!field.value);
+                            form.setValue('installments', 0);
+                          }}
+                          disabled={loading}
                         />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {/* @ts-ignore  */}
-                      {cards.map((card) => (
-                        <SelectItem key={card.id} value={card.id}>
-                          {card.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="hasInstallments"
-              render={({ field }) => (
-                <FormItem className="space-x-2">
-                  <FormLabel>Installment</FormLabel>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={() => {
-                        field.onChange(!field.value);
-                        form.setValue('installments', 0);
-                      }}
-                      disabled={loading}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="installments"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      disabled={form.getValues().hasInstallments === false}
-                      type="number"
-                      placeholder="2"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="installments"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          disabled={form.getValues().hasInstallments === false}
+                          type="number"
+                          placeholder="2"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
           </div>
           <Button disabled={loading} className="ml-auto" type="submit">
             {action}

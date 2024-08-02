@@ -52,6 +52,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 
           <DropdownMenuItem
             onClick={() =>
+              // TODO this can de do in a different way, context for example, need to be refactored later
               router.push(
                 `/dashboard/transaction/${id}?isRecurring=${isRecurring}&date=${data.date}`
               )

@@ -18,7 +18,7 @@ export default function Page() {
   );
 
   useEffect(() => {
-    if (transactionId) {
+    if (transactionId && transactionId !== 'new') {
       axiosInstance
         .get('/transaction', {
           params: {
@@ -31,7 +31,7 @@ export default function Page() {
           setInitialData(res.data);
         });
     }
-  }, [transactionId, isRecurring]);
+  }, [transactionId, isRecurring, date]);
 
   return (
     <ScrollArea className="h-full">
