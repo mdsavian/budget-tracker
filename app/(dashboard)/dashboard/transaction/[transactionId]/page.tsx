@@ -3,12 +3,15 @@ import { TransactionForm } from '@/components/forms/transaction-form';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import axiosInstance from '@/lib/axios';
 import { Transaction } from '@/types';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import React, { useEffect } from 'react';
 
 export default function Page() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const { transactionId } = params;
+  const isRecurring = searchParams?.get('isRecurring');
+  const date = searchParams?.get('date');
 
   const [initialData, setInitialData] = React.useState<Transaction | null>(
     null
@@ -16,11 +19,19 @@ export default function Page() {
 
   useEffect(() => {
     if (transactionId) {
-      axiosInstance.get(`/transaction/${transactionId}`).then((res) => {
-        setInitialData(res.data);
-      });
+      axiosInstance
+        .get('/transaction', {
+          params: {
+            id: transactionId,
+            isRecurring: isRecurring ?? false,
+            date: date ?? null
+          }
+        })
+        .then((res) => {
+          setInitialData(res.data);
+        });
     }
-  }, [transactionId]);
+  }, [transactionId, isRecurring]);
 
   return (
     <ScrollArea className="h-full">

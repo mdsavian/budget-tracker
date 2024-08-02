@@ -24,6 +24,14 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 
   const onConfirm = async () => {};
 
+  let isRecurring = false;
+  let id = data.id;
+
+  if (data.id === '00000000-0000-0000-0000-000000000000') {
+    isRecurring = true;
+    id = data.recurringId;
+  }
+
   return (
     <>
       <AlertModal
@@ -43,7 +51,11 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
           <DropdownMenuItem
-            onClick={() => router.push(`/dashboard/transaction/${data.id}`)}
+            onClick={() =>
+              router.push(
+                `/dashboard/transaction/${id}?isRecurring=${isRecurring}&date=${data.date}`
+              )
+            }
           >
             <Edit className="mr-2 h-4 w-4" /> Update
           </DropdownMenuItem>
