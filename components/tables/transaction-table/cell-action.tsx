@@ -12,6 +12,8 @@ import { Edit, MoreHorizontal, Trash } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { TransactionData } from './types';
+import { useToast } from '@/components/ui/use-toast';
+import axiosInstance from '@/lib/axios';
 
 interface CellActionProps {
   data: TransactionData;
@@ -21,8 +23,26 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
 
-  const onConfirm = async () => {};
+  const onConfirm = async () => {
+    try {
+      await axiosInstance.delete(`/transaction/${data.id}`);
+      toast({
+        variant: 'default',
+        title: 'Success',
+        description: 'Transaction deleted successfully'
+      });
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Error deleting transaction'
+      });
+    } finally {
+      setOpen(false);
+    }
+  };
 
   let isRecurring = false;
   let id = data.id;
