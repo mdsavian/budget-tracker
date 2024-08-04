@@ -131,7 +131,9 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
         accountId: initialData.accountId,
         creditCardId: initialData.creditCardId ? initialData.creditCardId : '',
         updateRecurring: false,
-        transactionType: initialData.transactionType
+        // TODO change this despesa when change backend
+        transactionType:
+          initialData.transactionType === 'Despesa' ? 'Debit' : 'Income'
       }
     : {
         fixed: false,
@@ -145,7 +147,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
         paid: false,
         updaterecurring: false,
         category: '',
-        transactionType: 'Expense'
+        transactionType: 'Debit'
       };
 
   const form = useForm<TransactionFormValues>({
@@ -153,7 +155,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     defaultValues,
     values: defaultValues
   });
-  const isExpense = form.getValues().transactionType === 'Expense';
+  const isDebit = form.getValues().transactionType === 'Debit';
 
   const onSubmit = async (data: TransactionFormValues) => {
     try {
@@ -171,7 +173,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
           amount: data.amount,
           updateRecurringTransaction: data.updateRecurring ?? false
         });
-      } else if (isExpense) {
+      } else if (isDebit) {
         if (data.creditCardId) {
           await axiosInstance.post(`/transaction/expense/creditcard`, data);
         } else {
@@ -236,8 +238,8 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem key="expense" value="Expense">
-                      Expense
+                    <SelectItem key="expense" value="Debit">
+                      Debit
                     </SelectItem>
                     <SelectItem key="income" value="Income">
                       Income
@@ -285,7 +287,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                 </FormItem>
               )}
             />
-            {isExpense && (
+            {isDebit && (
               <>
                 <FormField
                   control={form.control}
@@ -427,7 +429,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
               )}
             />
 
-            {isExpense && (
+            {isDebit && (
               <>
                 <FormField
                   control={form.control}
