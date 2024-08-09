@@ -186,8 +186,8 @@ const Filter: React.FC<FilterProps> = ({ column, labels }) => {
         <SelectContent>
           <SelectGroup>
             <SelectItem value="All">All</SelectItem>
-            <SelectItem value="Receita">Receita</SelectItem>
-            <SelectItem value="Despesa">Despesa</SelectItem>
+            <SelectItem value="Credit">Credit</SelectItem>
+            <SelectItem value="Debit">Debit</SelectItem>
           </SelectGroup>
         </SelectContent>
       </Select>

@@ -13,4 +13,4 @@ export type TransactionData = {
 };
 
 // TODO change this to english
-export type transactionType = 'Receita' | 'Despesa';
+export type transactionType = 'Credit' | 'Debit';

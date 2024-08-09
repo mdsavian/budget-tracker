@@ -131,9 +131,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
         accountId: initialData.accountId,
         creditCardId: initialData.creditCardId ? initialData.creditCardId : '',
         updateRecurring: false,
-        // TODO change this despesa when change backend
-        transactionType:
-          initialData.transactionType === 'Despesa' ? 'Debit' : 'Income'
+        transactionType: initialData.transactionType
       }
     : {
         fixed: false,
@@ -175,12 +173,12 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
         });
       } else if (isDebit) {
         if (data.creditCardId) {
-          await axiosInstance.post(`/transaction/expense/creditcard`, data);
+          await axiosInstance.post(`/transaction/debit/creditcard`, data);
         } else {
-          await axiosInstance.post(`/transaction/expense`, data);
+          await axiosInstance.post(`/transaction/debit`, data);
         }
       } else {
-        await axiosInstance.post(`/transaction/income`, {
+        await axiosInstance.post(`/transaction/credit`, {
           accountId: data.accountId,
           categoryId: data.categoryId,
           date: data.date,
@@ -238,11 +236,11 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem key="expense" value="Debit">
+                    <SelectItem key="debit" value="Debit">
                       Debit
                     </SelectItem>
-                    <SelectItem key="income" value="Income">
-                      Income
+                    <SelectItem key="credit" value="credit">
+                      credit
                     </SelectItem>
                   </SelectContent>
                 </Select>

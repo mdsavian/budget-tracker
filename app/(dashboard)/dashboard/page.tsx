@@ -106,21 +106,21 @@ export default function Page() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2">
-                    <div className={titleStyles}>Receitas</div>
+                    <div className={titleStyles}>Credits</div>
                     <div className={cn(valueStyles, 'text-green-600')}>
                       {formatValue(dashboardData?.totalCredit || 0)}
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2">
-                    <div className={titleStyles}>Despesas</div>
+                    <div className={titleStyles}>Debits</div>
                     <div className={cn(valueStyles, 'text-red-600')}>
                       {formatValue(dashboardData?.totalDebit || 0)}
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2">
-                    <div className={titleStyles}>Despesas nao pagas</div>
+                    <div className={titleStyles}>Debits nao pagas</div>
                     <div className={cn(valueStyles, 'text-red-600')}>
                       {formatValue(dashboardData?.totalDebitUnpaid || 0)}
                     </div>
