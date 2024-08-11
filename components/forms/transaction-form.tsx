@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import * as z from 'zod';
 import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -120,20 +121,24 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     fetchDatas();
   }, []);
 
-  const defaultValues = initialData
-    ? {
+  const defaultValues = React.useMemo(() => {
+    if (initialData) {
+      const transactionDate = initialData.paidDate || initialData.date;
+
+      return {
         amount: initialData.amount,
         fulfilled: initialData.fulfilled,
         fixed: initialData.recurringTransactionId != null,
-        date: new Date(initialData.date).toISOString().split('T')[0],
+        date: new Date(transactionDate).toISOString().split('T')[0],
         description: initialData.description,
         categoryId: initialData.categoryId,
         accountId: initialData.accountId,
         creditCardId: initialData.creditCardId ? initialData.creditCardId : '',
         updateRecurring: false,
         transactionType: initialData.transactionType
-      }
-    : {
+      };
+    } else {
+      return {
         fixed: false,
         description: '',
         categoryId: '',
@@ -147,6 +152,8 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
         category: '',
         transactionType: 'Debit'
       };
+    }
+  }, [initialData]);
 
   const form = useForm<TransactionFormValues>({
     resolver: zodResolver(formSchema),

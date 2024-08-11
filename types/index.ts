@@ -11,6 +11,7 @@ export type Transaction = {
   recurringTransactionId: string;
   transactionType: string;
   date: string;
+  paidDate?: string;
   description: string;
   amount: number;
   fulfilled: boolean;

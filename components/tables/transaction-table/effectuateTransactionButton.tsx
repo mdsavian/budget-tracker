@@ -10,10 +10,14 @@ const EffectuateTransactionButton = ({ row }: { row: TransactionData }) => {
 
   const effectuate = async () => {
     try {
+      const splitDate = row.date.split('/');
+      const formattedDate = `${splitDate[2]}-${splitDate[1]}-${splitDate[0]}`;
+
       await axiosInstance.post('/transaction/effectuate', {
         transactionId: row.id,
         recurringTransactionId: row.recurringId,
-        amount: row.amount
+        amount: row.amount,
+        date: formattedDate
       });
       toast({
         variant: 'default',

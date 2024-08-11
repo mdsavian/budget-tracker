@@ -11,6 +11,11 @@ import EffectuateTransactionButton from './effectuateTransactionButton';
 
 export const processData = (transactions: Transaction[]): TransactionData[] => {
   return transactions.map((trans) => {
+    const transactionDate =
+      trans.paidDate != null
+        ? format(new Date(trans.paidDate.replace('Z', '')), 'dd/MM/yyyy')
+        : format(new Date(trans.date.replace('Z', '')), 'dd/MM/yyyy');
+
     return {
       id: trans.id,
       fulfilled: trans.fulfilled,
@@ -19,7 +24,7 @@ export const processData = (transactions: Transaction[]): TransactionData[] => {
       creditCardId: trans.creditCardId,
       creditCard: trans.creditCardId !== null,
       type: trans.transactionType,
-      date: format(new Date(trans.date.replace('Z', '')), 'dd/MM/yyyy'),
+      date: transactionDate,
       description: trans.description,
       account: trans.account,
       category: trans.category,
@@ -52,7 +57,6 @@ export const columns: ColumnDef<TransactionData>[] = [
     accessorKey: 'fulfilled',
     header: 'Effectuated',
     cell: (info) => {
-      console.log(info);
       return info.getValue() ? (
         <Check className="text-green-500" />
       ) : (
