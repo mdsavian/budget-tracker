@@ -1,6 +1,6 @@
 export type TransactionData = {
   id: string;
-  paid: boolean;
+  fulfilled: boolean;
   creditCard: boolean;
   creditCardId: string;
   type: string;

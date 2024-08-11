@@ -32,7 +32,7 @@ const formSchema = z
     amount: z.coerce
       .number()
       .min(1, { message: 'Amount should be higher than 0' }),
-    paid: z.boolean(),
+    fulfilled: z.boolean(),
     fixed: z.boolean(),
     date: z.string(),
     description: z
@@ -123,7 +123,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
   const defaultValues = initialData
     ? {
         amount: initialData.amount,
-        paid: initialData.paid,
+        fulfilled: initialData.fulfilled,
         fixed: initialData.recurringTransactionId != null,
         date: new Date(initialData.date).toISOString().split('T')[0],
         description: initialData.description,
@@ -142,7 +142,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
         date: new Date().toISOString().split('T')[0],
         amount: 0,
         price: 0,
-        paid: false,
+        fulfilled: false,
         updaterecurring: false,
         category: '',
         transactionType: 'Debit'
@@ -270,10 +270,10 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
             />
             <FormField
               control={form.control}
-              name="paid"
+              name="fulfilled"
               render={({ field }) => (
                 <FormItem className="space-x-2">
-                  <FormLabel>Paid</FormLabel>
+                  <FormLabel>Fulfilled</FormLabel>
                   <FormControl>
                     <Switch
                       checked={field.value}

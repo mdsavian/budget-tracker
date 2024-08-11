@@ -13,7 +13,7 @@ export const processData = (transactions: Transaction[]): TransactionData[] => {
   return transactions.map((trans) => {
     return {
       id: trans.id,
-      paid: trans.paid,
+      fulfilled: trans.fulfilled,
       recurringId: trans.recurringTransactionId,
       recurring: trans.recurringTransactionId !== null,
       creditCardId: trans.creditCardId,
@@ -49,9 +49,10 @@ export const columns: ColumnDef<TransactionData>[] = [
     enableHiding: false
   },
   {
-    accessorKey: 'paid',
+    accessorKey: 'fulfilled',
     header: 'Effectuated',
     cell: (info) => {
+      console.log(info);
       return info.getValue() ? (
         <Check className="text-green-500" />
       ) : (
@@ -60,7 +61,11 @@ export const columns: ColumnDef<TransactionData>[] = [
     },
     enableSorting: true,
     sortingFn: (a, b) => {
-      return a.original.paid === b.original.paid ? 0 : a.original.paid ? -1 : 1;
+      return a.original.fulfilled === b.original.fulfilled
+        ? 0
+        : a.original.fulfilled
+        ? -1
+        : 1;
     },
     meta: {
       filterVariant: 'boolean'
@@ -153,7 +158,7 @@ export const columns: ColumnDef<TransactionData>[] = [
   {
     id: 'effectuate',
     cell: (cell) => {
-      if (!cell.row.original.paid) {
+      if (!cell.row.original.fulfilled) {
         return <EffectuateTransactionButton row={cell.row.original} />;
       }
     }

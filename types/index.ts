@@ -13,7 +13,7 @@ export type Transaction = {
   date: string;
   description: string;
   amount: number;
-  paid: boolean;
+  fulfilled: boolean;
 };
 
 export type DashboardData = {
