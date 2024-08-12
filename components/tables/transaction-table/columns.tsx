@@ -12,8 +12,8 @@ import EffectuateTransactionButton from './effectuateTransactionButton';
 export const processData = (transactions: Transaction[]): TransactionData[] => {
   return transactions.map((trans) => {
     const transactionDate =
-      trans.paidDate != null
-        ? format(new Date(trans.paidDate.replace('Z', '')), 'dd/MM/yyyy')
+      trans.effectuatedDate != null
+        ? format(new Date(trans.effectuatedDate.replace('Z', '')), 'dd/MM/yyyy')
         : format(new Date(trans.date.replace('Z', '')), 'dd/MM/yyyy');
 
     return {

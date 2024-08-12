@@ -123,7 +123,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
 
   const defaultValues = React.useMemo(() => {
     if (initialData) {
-      const transactionDate = initialData.paidDate || initialData.date;
+      const transactionDate = initialData.effectuatedDate || initialData.date;
 
       return {
         amount: initialData.amount,
