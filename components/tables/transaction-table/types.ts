@@ -11,6 +11,3 @@ export type TransactionData = {
   amount: number;
   recurringId: string;
 };
-
-// TODO change this to english
-export type transactionType = 'Credit' | 'Debit';

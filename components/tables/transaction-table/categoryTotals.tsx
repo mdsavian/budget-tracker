@@ -1,8 +1,9 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Row } from '@tanstack/react-table';
 import { TransactionData } from './types';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { formatValue } from '@/lib/utils';
+import { TransactionType } from '@/types';
 
 type CategoryTotalsProps = {
   filteredRows: Row<TransactionData>[];
@@ -18,9 +19,16 @@ export function CategoryTotals({ filteredRows }: CategoryTotalsProps) {
     const categoryTotals: CategoryTotals = {};
 
     // Accumulate totals for each category
-    filteredRows.forEach(({ original: { category, amount } }) => {
-      if (category && amount) {
-        categoryTotals[category] = (categoryTotals[category] || 0) + amount;
+    filteredRows.forEach(({ original: { category, amount, type } }) => {
+      if (category && amount && type) {
+        if (type === TransactionType.Credit) {
+          categoryTotals[category] = (categoryTotals[category] || 0) + amount;
+        } else {
+          // always show positive values for debit transactions
+          const debitAmount = (categoryTotals[category] || 0) - amount;
+          categoryTotals[category] =
+            debitAmount < 0 ? debitAmount * -1 : debitAmount;
+        }
       }
     });
 

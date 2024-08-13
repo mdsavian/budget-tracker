@@ -166,6 +166,8 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     try {
       setLoading(true);
 
+      console.log(data);
+
       if (initialData) {
         await axiosInstance.put('/transaction/update', {
           transactionId: initialData.id,
@@ -176,6 +178,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
           date: data.date,
           description: data.description,
           amount: data.amount,
+          fulfilled: data.fulfilled,
           updateRecurringTransaction: data.updateRecurring ?? false
         });
       } else if (isDebit) {
@@ -190,7 +193,8 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
           categoryId: data.categoryId,
           date: data.date,
           description: data.description,
-          amount: data.amount
+          amount: data.amount,
+          fulfilled: data.fulfilled
         });
       }
 

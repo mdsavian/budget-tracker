@@ -17,6 +17,11 @@ export type Transaction = {
   fulfilled: boolean;
 };
 
+export enum TransactionType {
+  Credit = 'Credit',
+  Debit = 'Debit'
+}
+
 export type DashboardData = {
   transactions: Transaction[];
   totalCredit: number;
