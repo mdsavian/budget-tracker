@@ -8,7 +8,8 @@ import {
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { CalendarIcon } from '@radix-ui/react-icons';
-import { format } from 'date-fns';
+import { endOfMonth, format, startOfMonth } from 'date-fns';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import * as React from 'react';
 import { DateRange } from 'react-day-picker';
 
@@ -21,44 +22,89 @@ export function CalendarDateRangePicker({
   setDate: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
   date: DateRange | undefined;
 }) {
+  const changeMonth = (direction: 'next' | 'prev') => {
+    if (!date?.from || !date?.to) {
+      return;
+    }
+
+    if (direction === 'next') {
+      setDate({
+        from: startOfMonth(
+          new Date(date.from.getFullYear(), date.from.getMonth() + 1)
+        ),
+        to: endOfMonth(new Date(date.to.getFullYear(), date.to.getMonth() + 1))
+      });
+    } else {
+      setDate({
+        from: startOfMonth(
+          new Date(date.from.getFullYear(), date.from.getMonth() - 1)
+        ),
+        to: endOfMonth(new Date(date.to.getFullYear(), date.to.getMonth() - 1))
+      });
+    }
+  };
+
   return (
-    <div className={cn('grid gap-2', className)}>
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button
-            id="date"
-            variant={'outline'}
-            className={cn(
-              'w-[260px] justify-start text-left font-normal',
-              !date && 'text-muted-foreground'
-            )}
-          >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {date?.from ? (
-              date.to ? (
-                <>
-                  {format(date.from, 'LLL dd, y')} -{' '}
-                  {format(date.to, 'LLL dd, y')}
-                </>
-              ) : (
-                format(date.from, 'LLL dd, y')
-              )
-            ) : (
-              <span>Pick a date</span>
-            )}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="end">
-          <Calendar
-            initialFocus
-            mode="range"
-            defaultMonth={date?.from}
-            selected={date}
-            onSelect={setDate}
-            numberOfMonths={2}
-          />
-        </PopoverContent>
-      </Popover>
-    </div>
+    <>
+      <div className={cn('flex items-center justify-center gap-2', className)}>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => {
+            changeMonth('prev');
+          }}
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+
+        <div className={cn('grid gap-2', className)}>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                id="date"
+                variant={'outline'}
+                className={cn(
+                  'w-[260px] justify-start text-left font-normal',
+                  !date && 'text-muted-foreground'
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {date?.from ? (
+                  date.to ? (
+                    <>
+                      {format(date.from, 'LLL dd, y')} -{' '}
+                      {format(date.to, 'LLL dd, y')}
+                    </>
+                  ) : (
+                    format(date.from, 'LLL dd, y')
+                  )
+                ) : (
+                  <span>Pick a date</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="end">
+              <Calendar
+                initialFocus
+                mode="range"
+                defaultMonth={date?.from}
+                selected={date}
+                onSelect={setDate}
+                numberOfMonths={2}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => {
+            changeMonth('next');
+          }}
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      </div>
+    </>
   );
 }
