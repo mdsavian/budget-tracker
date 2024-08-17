@@ -161,7 +161,7 @@ export function TransactionTable({ data }: DataTableProps) {
 
       <ScrollArea className="round-md h-[calc(80vh-220px)] border">
         <CardHeader>
-          <CardTitle>Recent Sales</CardTitle>
+          <CardTitle>Category total</CardTitle>
         </CardHeader>
         <CardContent>
           <CategoryTotals filteredRows={filteredRows} />

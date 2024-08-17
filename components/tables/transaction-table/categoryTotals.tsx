@@ -22,12 +22,9 @@ export function CategoryTotals({ filteredRows }: CategoryTotalsProps) {
     filteredRows.forEach(({ original: { category, amount, type } }) => {
       if (category && amount && type) {
         if (type === TransactionType.Credit) {
-          categoryTotals[category] = (categoryTotals[category] || 0) + amount;
+          categoryTotals[category] = (categoryTotals[category] || 0) - amount;
         } else {
-          // always show positive values for debit transactions
-          const debitAmount = (categoryTotals[category] || 0) - amount;
-          categoryTotals[category] =
-            debitAmount < 0 ? debitAmount * -1 : debitAmount;
+          categoryTotals[category] = (categoryTotals[category] || 0) + amount;
         }
       }
     });
