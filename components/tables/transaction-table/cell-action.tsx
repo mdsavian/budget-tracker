@@ -35,7 +35,11 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 
   const onConfirm = async () => {
     try {
-      await axiosInstance.delete(`/transaction/${data.id}`);
+      await axiosInstance.post('/transaction', {
+        transactionId: id,
+        isRecurring,
+        date: new Date(data.date).toISOString().split('T')[0]
+      });
       toast({
         variant: 'default',
         title: 'Success',
