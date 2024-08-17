@@ -38,6 +38,11 @@ export type Account = {
   balance: number;
 };
 
+export type Category = {
+  description: string;
+  id: string;
+};
+
 export type CategoryTotal = {
   name: string;
   total: number;

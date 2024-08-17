@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ColumnFiltersState,
   flexRender,
@@ -25,6 +25,8 @@ import { columns } from './columns';
 import Filter from './filters';
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CategoryTotals } from './categoryTotals';
+import axiosInstance from '@/lib/axios';
+import { Account, Category } from '@/types';
 interface DataTableProps {
   data: TransactionData[];
 }
@@ -44,18 +46,34 @@ export function TransactionTable({ data }: DataTableProps) {
     getSortedRowModel: getSortedRowModel()
   });
 
-  const labels = useMemo(() => {
-    
-    const categoryLabels = Array.from(
-      new Set(data?.map((trans) => trans.category))
-    );
-    const accountLabels = Array.from(
-      new Set(data?.map((trans) => trans.account))
-    );
-    return { categoryLabels, accountLabels };
-  }, [data]);
-
   const filteredRows = table.getFilteredRowModel().rows;
+
+  const [categories, setCategories] = useState<any>([]);
+  const [accounts, setAccounts] = useState<any>([]);
+
+  useEffect(() => {
+    const fetchDatas = async () => {
+      const categoryPromise = axiosInstance.get('/category');
+      const accountPromise = axiosInstance.get('/account');
+
+      const [categoryRes, accountRes] = await Promise.all([
+        categoryPromise,
+        accountPromise
+      ]);
+      setCategories(categoryRes.data);
+      setAccounts(accountRes.data);
+    };
+
+    fetchDatas();
+  }, []);
+
+  const labels = useMemo(() => {
+    const categoryLabels = categories.map(
+      (category: Category) => category.description
+    );
+    const accountLabels = accounts.map((account: Account) => account.name);
+    return { categoryLabels, accountLabels };
+  }, [categories, accounts]);
 
   return (
     <div className="column flex gap-8">

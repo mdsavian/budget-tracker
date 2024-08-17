@@ -14,6 +14,7 @@ import { useState } from 'react';
 import { TransactionData } from './types';
 import { useToast } from '@/components/ui/use-toast';
 import axiosInstance from '@/lib/axios';
+import { idIsNull } from '@/lib/utils';
 
 interface CellActionProps {
   data: TransactionData;
@@ -24,6 +25,13 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  let isRecurring = false;
+  let id = data.id;
+
+  if (idIsNull(data.id)) {
+    isRecurring = true;
+    id = data.recurringId;
+  }
 
   const onConfirm = async () => {
     try {
@@ -43,14 +51,6 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
       setOpen(false);
     }
   };
-
-  let isRecurring = false;
-  let id = data.id;
-
-  if (data.id === '00000000-0000-0000-0000-000000000000') {
-    isRecurring = true;
-    id = data.recurringId;
-  }
 
   return (
     <>

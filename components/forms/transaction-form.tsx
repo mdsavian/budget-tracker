@@ -250,8 +250,8 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                     <SelectItem key="debit" value="Debit">
                       Debit
                     </SelectItem>
-                    <SelectItem key="credit" value="credit">
-                      credit
+                    <SelectItem key="credit" value="Credit">
+                      Credit
                     </SelectItem>
                   </SelectContent>
                 </Select>
