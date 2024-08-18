@@ -19,6 +19,7 @@ import { Heading } from '@/components/ui/heading';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue
@@ -26,7 +27,7 @@ import {
 import { useToast } from '../ui/use-toast';
 import axiosInstance from '@/lib/axios';
 import { Switch } from '../ui/switch';
-import { Transaction } from '@/types';
+import { Category, Transaction } from '@/types';
 
 const formSchema = z
   .object({
@@ -426,11 +427,14 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                     </FormControl>
                     <SelectContent>
                       {/* @ts-ignore  */}
-                      {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.id}>
-                          {category.description}
-                        </SelectItem>
-                      ))}
+
+                      <SelectGroup className="max-h-[20rem] overflow-y-auto">
+                        {categories.map((category: Category) => (
+                          <SelectItem key={category.id} value={category.id}>
+                            {category.description}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
                     </SelectContent>
                   </Select>
                   <FormMessage />
