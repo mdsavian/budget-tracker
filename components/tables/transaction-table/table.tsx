@@ -77,7 +77,7 @@ export function TransactionTable({ data }: DataTableProps) {
 
   return (
     <div className="column flex gap-8">
-      <ScrollArea className="round-md h-[calc(80vh-220px)] border">
+      <ScrollArea className="round-md h-[calc(100vh-240px)] border">
         <Table className="relative">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -159,7 +159,7 @@ export function TransactionTable({ data }: DataTableProps) {
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
 
-      <ScrollArea className="round-md h-[calc(80vh-220px)] border">
+      <ScrollArea className="round-md h-[calc(100vh-240px)] border">
         <CardHeader>
           <CardTitle>Category total</CardTitle>
         </CardHeader>

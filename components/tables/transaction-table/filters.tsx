@@ -73,7 +73,7 @@ const Filter: React.FC<FilterProps> = ({ column, labels }) => {
           <SelectValue placeholder="All" />
         </SelectTrigger>
         <SelectContent>
-          <SelectGroup>
+          <SelectGroup className="max-h-[20rem] overflow-y-auto">
             <SelectItem value="all">All</SelectItem>
             <SelectItem value="true">True</SelectItem>
             <SelectItem value="false">False</SelectItem>
@@ -131,7 +131,7 @@ const Filter: React.FC<FilterProps> = ({ column, labels }) => {
         <SelectValue placeholder="All" />
       </SelectTrigger>
       <SelectContent>
-        <SelectGroup>
+        <SelectGroup className="max-h-[20rem] overflow-y-auto">
           <SelectItem value="all">All</SelectItem>
           {labels.accountLabels?.map((label) => (
             <SelectItem key={label} value={label}>
@@ -157,7 +157,7 @@ const Filter: React.FC<FilterProps> = ({ column, labels }) => {
         <SelectValue placeholder="All" />
       </SelectTrigger>
       <SelectContent>
-        <SelectGroup>
+        <SelectGroup className="max-h-[20rem] overflow-y-auto">
           <SelectItem value="all">All</SelectItem>
           {labels.categoryLabels?.map((label) => (
             <SelectItem key={label} value={label}>
@@ -184,7 +184,7 @@ const Filter: React.FC<FilterProps> = ({ column, labels }) => {
           <SelectValue placeholder="All" />
         </SelectTrigger>
         <SelectContent>
-          <SelectGroup>
+          <SelectGroup className="max-h-[20rem] overflow-y-auto">
             <SelectItem value="All">All</SelectItem>
             <SelectItem value="Credit">Credit</SelectItem>
             <SelectItem value="Debit">Debit</SelectItem>
