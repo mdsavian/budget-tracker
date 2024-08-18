@@ -35,7 +35,10 @@ export function CategoryTotals({ filteredRows }: CategoryTotalsProps) {
     )
       .sort((a, b) => categoryTotals[b] - categoryTotals[a]) // Sort by total in descending order
       .reduce((acc: CategoryFormattedTotals, category) => {
-        acc[category] = formatValue(categoryTotals[category]);
+        let value = categoryTotals[category];
+        value = value < 0 ? value * -1 : value;
+
+        acc[category] = formatValue(value);
         return acc;
       }, {});
 
