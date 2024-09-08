@@ -9,8 +9,6 @@ import { DashboardData } from '@/types';
 import { startOfMonth, endOfMonth, format } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { DateRange } from 'react-day-picker';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
 export default function Page() {
   const [date, setDate] = useState<DateRange | undefined>({
@@ -108,10 +106,27 @@ export default function Page() {
                   </svg>
                 </CardHeader>
                 <CardContent>
+                  <div className="mb-3 grid grid-cols-1 md:grid-cols-2">
+                    <div className={'flex items-center text-2xl'}>Balance</div>
+                    <div
+                      className={
+                        'items center flex text-2xl font-bold text-green-600 md:justify-end'
+                      }
+                    >
+                      {formatValue(dashboardData?.balance || 0)}
+                    </div>
+                  </div>
+
                   <div className="grid grid-cols-1 md:grid-cols-2">
                     <div className={titleStyles}>Credits</div>
                     <div className={cn(valueStyles, 'text-green-600')}>
                       {formatValue(dashboardData?.totalCredit || 0)}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2">
+                    <div className={titleStyles}>Credits Upcoming</div>
+                    <div className={cn(valueStyles, 'text-green-600')}>
+                      {formatValue(dashboardData?.totalCreditUpcoming || 0)}
                     </div>
                   </div>
 
@@ -133,6 +148,14 @@ export default function Page() {
                     <div className={titleStyles}>Cartão de crédito</div>
                     <div className={cn(valueStyles, 'text-red-600')}>
                       {formatValue(dashboardData?.totalCreditCard || 0)}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2">
+                    <div className={titleStyles}>
+                      Adiantamento Cartão de crédito
+                    </div>
+                    <div className={cn(valueStyles, 'text-green-600')}>
+                      {formatValue(dashboardData?.totalCreditCardUpcoming || 0)}
                     </div>
                   </div>
                 </CardContent>
