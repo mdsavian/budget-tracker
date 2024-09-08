@@ -4,6 +4,8 @@ import { TransactionData } from './types';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { formatValue } from '@/lib/utils';
 import { TransactionType } from '@/types';
+import { CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { ScrollArea } from '@radix-ui/react-scroll-area';
 
 type CategoryTotalsProps = {
   filteredRows: Row<TransactionData>[];
@@ -13,6 +15,7 @@ export function CategoryTotals({ filteredRows }: CategoryTotalsProps) {
   type CategoryTotals = { [category: string]: number };
   type CategoryFormattedTotals = { [category: string]: string };
 
+  let total = 0;
   function calculateAndSortCategoryTotals(
     filteredRows: any[]
   ): { category: string; formattedTotal: string }[] {
@@ -37,6 +40,7 @@ export function CategoryTotals({ filteredRows }: CategoryTotalsProps) {
       .reduce((acc: CategoryFormattedTotals, category) => {
         let value = categoryTotals[category];
         value = value < 0 ? value * -1 : value;
+        total += value;
 
         acc[category] = formatValue(value);
         return acc;
@@ -53,24 +57,31 @@ export function CategoryTotals({ filteredRows }: CategoryTotalsProps) {
   const sortedCategoryTotals = calculateAndSortCategoryTotals(filteredRows);
 
   return (
-    <div className="space-y-4">
-      {sortedCategoryTotals.map((row) => (
-        <div className="flex items-center" key={row.category}>
-          <Avatar className="h-9 w-9">
-            <AvatarFallback>
-              {row.category.substring(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <div className="ml-4 space-y-1">
-            <p className="mr-3 text-sm font-medium leading-none">
-              {row.category}
-            </p>
-          </div>
-          <div className="ml-auto text-right font-medium">
-            {row.formattedTotal}
-          </div>
+    <ScrollArea className="round-md h-[calc(100vh-240px)] border">
+      <CardHeader>
+        <CardTitle>Category total {formatValue(total)}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {sortedCategoryTotals.map((row) => (
+            <div className="flex items-center" key={row.category}>
+              <Avatar className="h-9 w-9">
+                <AvatarFallback>
+                  {row.category.substring(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="ml-4 space-y-1">
+                <p className="mr-3 text-sm font-medium leading-none">
+                  {row.category}
+                </p>
+              </div>
+              <div className="ml-auto text-right font-medium">
+                {row.formattedTotal}
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
+      </CardContent>
+    </ScrollArea>
   );
 }

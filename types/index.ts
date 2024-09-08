@@ -26,9 +26,12 @@ export type DashboardData = {
   transactions: Transaction[];
   totalCredit: number;
   totalDebit: number;
-  totalCreditCard: number;
+  totalCreditUpcoming: number;
   totalDebitUnpaid: number;
+  totalCreditCard: number;
+  totalCreditCardUpcoming: number;
   categoryTotals: CategoryTotal[];
+  balance: number;
   accounts: Account[];
 };
 

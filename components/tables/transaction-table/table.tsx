@@ -159,14 +159,7 @@ export function TransactionTable({ data }: DataTableProps) {
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
 
-      <ScrollArea className="round-md h-[calc(100vh-240px)] border">
-        <CardHeader>
-          <CardTitle>Category total</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <CategoryTotals filteredRows={filteredRows} />
-        </CardContent>
-      </ScrollArea>
+      <CategoryTotals filteredRows={filteredRows} />
     </div>
   );
 }
