@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { formatValue } from '@/lib/utils';
 import { TransactionType } from '@/types';
 import { CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { ScrollArea } from '@radix-ui/react-scroll-area';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 type CategoryTotalsProps = {
   filteredRows: Row<TransactionData>[];
