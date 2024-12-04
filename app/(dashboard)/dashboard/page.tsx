@@ -123,12 +123,12 @@ export default function Page() {
                       {formatValue(dashboardData?.totalCredit || 0)}
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2">
+                  {/* <div className="grid grid-cols-1 md:grid-cols-2">
                     <div className={titleStyles}>Credits Upcoming</div>
                     <div className={cn(valueStyles, 'text-green-600')}>
                       {formatValue(dashboardData?.totalCreditUpcoming || 0)}
                     </div>
-                  </div>
+                  </div> */}
 
                   <div className="grid grid-cols-1 md:grid-cols-2">
                     <div className={titleStyles}>Debits</div>
@@ -150,14 +150,14 @@ export default function Page() {
                       {formatValue(dashboardData?.totalCreditCard || 0)}
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2">
+                  {/* <div className="grid grid-cols-1 md:grid-cols-2">
                     <div className={titleStyles}>
                       Adiantamento Cartão de crédito
                     </div>
                     <div className={cn(valueStyles, 'text-green-600')}>
                       {formatValue(dashboardData?.totalCreditCardUpcoming || 0)}
                     </div>
-                  </div>
+                  </div> */}
                 </CardContent>
               </Card>
             </div>
