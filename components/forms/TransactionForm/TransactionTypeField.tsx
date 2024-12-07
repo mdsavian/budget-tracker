@@ -15,7 +15,7 @@ import {
 import { Control } from 'react-hook-form';
 import { TransactionFormValues } from './types';
 
-const TransactionTypeSelect = ({
+const TransactionTypeField = ({
   loading,
   control
 }: {
@@ -59,4 +59,4 @@ const TransactionTypeSelect = ({
   );
 };
 
-export default TransactionTypeSelect;
+export default TransactionTypeField;

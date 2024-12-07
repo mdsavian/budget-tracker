@@ -18,7 +18,6 @@ import { Heading } from '@/components/ui/heading';
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue
@@ -26,10 +25,10 @@ import {
 import { useToast } from '../../ui/use-toast';
 import axiosInstance from '@/lib/axios';
 import { Switch } from '../../ui/switch';
-import { Category } from '@/types';
 import { formSchema } from './schema';
 import { TransactionFormProps, TransactionFormValues } from './types';
-import TransactionTypeSelect from './TransactionTypeSelect';
+import TransactionTypeField from './TransactionTypeField';
+import CategoryField from './CategoryField';
 
 export const TransactionForm: React.FC<TransactionFormProps> = ({
   initialData
@@ -45,22 +44,18 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     ? 'Transaction updated.'
     : 'Transaction created.';
 
-  const [categories, setCategories] = useState<any>([]);
   const [accounts, setAccounts] = useState<any>([]);
   const [cards, setCards] = useState<any>([]);
 
   useEffect(() => {
     const fetchDatas = async () => {
-      const categoryPromise = axiosInstance.get('/category');
       const accountPromise = axiosInstance.get('/account');
       const cardPromise = axiosInstance.get('/creditcard');
 
-      const [categoryRes, accountRes, cardRes] = await Promise.all([
-        categoryPromise,
+      const [accountRes, cardRes] = await Promise.all([
         accountPromise,
         cardPromise
       ]);
-      setCategories(categoryRes.data);
       setAccounts(accountRes.data);
       setCards(cardRes.data);
     };
@@ -171,7 +166,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
           className="w-full space-y-8"
         >
           {/* TODO this will be moved for the own page */}
-          <TransactionTypeSelect loading={loading} control={form.control} />
+          <TransactionTypeField loading={loading} control={form.control} />
 
           <div className="gap-8 md:grid md:grid-cols-3">
             <FormField
@@ -229,42 +224,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="categoryId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <Select
-                    disabled={loading}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          defaultValue={field.value}
-                          placeholder="Select a category"
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {/* @ts-ignore  */}
-
-                      <SelectGroup className="max-h-[20rem] overflow-y-auto">
-                        {categories.map((category: Category) => (
-                          <SelectItem key={category.id} value={category.id}>
-                            {category.description}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <CategoryField control={form.control} />
 
             <FormField
               control={form.control}
