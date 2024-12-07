@@ -28,7 +28,7 @@ const TransactionTypeField = ({
       name="transactionType"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Transaction Type</FormLabel>
+          <FormLabel>Transaction type</FormLabel>
           <Select
             disabled={loading}
             onValueChange={field.onChange}

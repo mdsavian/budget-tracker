@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
@@ -15,13 +15,6 @@ import {
 } from '@/components/ui/form';
 import { Separator } from '@/components/ui/separator';
 import { Heading } from '@/components/ui/heading';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
 import { useToast } from '../../ui/use-toast';
 import axiosInstance from '@/lib/axios';
 import { Switch } from '../../ui/switch';
@@ -30,6 +23,7 @@ import { TransactionFormProps, TransactionFormValues } from './types';
 import TransactionTypeField from './TransactionTypeField';
 import CategoryField from './CategoryField';
 import AccountField from './AccountField';
+import CreditCardField from './CreditCardField';
 
 export const TransactionForm: React.FC<TransactionFormProps> = ({
   initialData
@@ -46,25 +40,6 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
   const toastMessage = isUpdating
     ? 'Transaction updated.'
     : 'Transaction created.';
-
-  const [accounts, setAccounts] = useState<any>([]);
-  const [cards, setCards] = useState<any>([]);
-
-  useEffect(() => {
-    const fetchDatas = async () => {
-      const accountPromise = axiosInstance.get('/account');
-      const cardPromise = axiosInstance.get('/creditcard');
-
-      const [accountRes, cardRes] = await Promise.all([
-        accountPromise,
-        cardPromise
-      ]);
-      setAccounts(accountRes.data);
-      setCards(cardRes.data);
-    };
-
-    fetchDatas();
-  }, []);
 
   const defaultValues = React.useMemo(() => {
     if (initialData) {
@@ -173,6 +148,24 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
           <TransactionTypeField loading={loading} control={form.control} />
 
           <div className="grid grid-cols-3 gap-8">
+            <FormField
+              control={form.control}
+              name="fulfilled"
+              render={({ field }) => (
+                <FormItem className="space-x-2">
+                  <FormLabel>Fulfilled</FormLabel>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={() => field.onChange(!field.value)}
+                      disabled={loading}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {isDebit && (
               <>
                 <FormField
@@ -214,24 +207,6 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                 )}
               </>
             )}
-
-            <FormField
-              control={form.control}
-              name="fulfilled"
-              render={({ field }) => (
-                <FormItem className="space-x-2">
-                  <FormLabel>Fulfilled</FormLabel>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={() => field.onChange(!field.value)}
-                      disabled={loading}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
           </div>
 
           <div className="gap-8 md:grid md:grid-cols-3">
@@ -293,82 +268,51 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
             <CategoryField control={form.control} />
 
             <AccountField control={form.control} />
-
-            {isDebit && (
-              <>
-                <FormField
-                  control={form.control}
-                  name="creditCardId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Credit Card</FormLabel>
-                      <Select
-                        disabled={loading}
-                        onValueChange={field.onChange}
-                        value={field.value}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue
-                              defaultValue={field.value}
-                              placeholder="Select a credit card"
-                            />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {/* @ts-ignore  */}
-                          {cards.map((card) => (
-                            <SelectItem key={card.id} value={card.id}>
-                              {card.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="hasInstallments"
-                  render={({ field }) => (
-                    <FormItem className="space-x-2">
-                      <FormLabel>Installment</FormLabel>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={() => {
-                            field.onChange(!field.value);
-                            form.setValue('installments', 0);
-                          }}
-                          disabled={loading}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="installments"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          disabled={form.getValues().hasInstallments === false}
-                          type="number"
-                          placeholder="2"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </>
-            )}
           </div>
+
+          {isDebit && (
+            <div className="grid grid-cols-3 items-center gap-8">
+              <CreditCardField control={form.control} />
+
+              <FormField
+                control={form.control}
+                name="hasInstallments"
+                render={({ field }) => (
+                  <FormItem className="space-x-2">
+                    <FormLabel>Installment</FormLabel>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={() => {
+                          field.onChange(!field.value);
+                          form.setValue('installments', 0);
+                        }}
+                        disabled={loading}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="installments"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        disabled={form.getValues().hasInstallments === false}
+                        type="number"
+                        placeholder="2"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          )}
           <Button disabled={loading} className="ml-auto" type="submit">
             {action}
           </Button>
