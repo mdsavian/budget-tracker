@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
 import { Plus } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { endOfMonth, format, startOfMonth } from 'date-fns';
 import axiosInstance from '@/lib/axios';
@@ -14,10 +13,10 @@ import {
   processData,
   TransactionTable
 } from '@/components/tables/transaction-table';
+import TransactionModal from '@/components/modal/transaction-modal';
 
 const TransactionPage: React.FC = () => {
-  const router = useRouter();
-
+  const [isOpenModal, setIsOpenModal] = useState(false);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   const [date, setDate] = useState<DateRange | undefined>({
@@ -52,12 +51,17 @@ const TransactionPage: React.FC = () => {
         <Heading title="Transactions" description="" />
         <Button
           className="text-xs md:text-sm"
-          onClick={() => router.push(`/dashboard/transaction/new`)}
+          onClick={() => setIsOpenModal(true)}
         >
           <Plus className="mr-2 h-4 w-4" /> Add New
         </Button>
       </div>
       <Separator />
+
+      <TransactionModal
+        isOpen={isOpenModal}
+        onClose={() => setIsOpenModal(false)}
+      />
       <CalendarDateRangePicker date={date} setDate={setDate} />
       <TransactionTable data={formattedTransactions} />
     </div>

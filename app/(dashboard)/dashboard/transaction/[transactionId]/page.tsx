@@ -1,5 +1,5 @@
 'use client';
-import { TransactionForm } from '@/components/forms/transaction-form';
+import { TransactionForm } from '@/components/forms/TransactionForm';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import axiosInstance from '@/lib/axios';
 import { Transaction } from '@/types';
