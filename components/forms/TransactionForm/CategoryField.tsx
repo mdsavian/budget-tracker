@@ -32,8 +32,8 @@ const CategoryField = ({
     setLoading(true);
     const fetchCategories = async () => {
       try {
-        const accountResponse = await axiosInstance.get('/account');
-        setCategories(accountResponse.data);
+        const categoryResponse = await axiosInstance.get('/category');
+        setCategories(categoryResponse.data);
       } catch (error) {
         toast({
           variant: 'destructive',
@@ -51,7 +51,7 @@ const CategoryField = ({
   return (
     <FormField
       control={control}
-      name="accountId"
+      name="categoryId"
       render={({ field }) => (
         <FormItem>
           <FormLabel>Category</FormLabel>
@@ -65,15 +65,15 @@ const CategoryField = ({
               <SelectTrigger>
                 <SelectValue
                   defaultValue={field.value}
-                  placeholder="Select a account"
+                  placeholder="Select a category"
                 />
               </SelectTrigger>
             </FormControl>
             <SelectContent>
               <SelectGroup className="max-h-[20rem] overflow-y-auto">
-                {categories.map((account: Category) => (
-                  <SelectItem key={account.id} value={account.id}>
-                    {account.description}
+                {categories.map((category: Category) => (
+                  <SelectItem key={category.id} value={category.id}>
+                    {category.description}
                   </SelectItem>
                 ))}
               </SelectGroup>

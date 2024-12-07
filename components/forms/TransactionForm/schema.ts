@@ -14,7 +14,6 @@ export const formSchema = z
     categoryId: z.string().min(1, { message: 'Please select a category' }),
     accountId: z.string().min(1, { message: 'Please select a account' }),
     creditCardId: z.string().optional(),
-    hasInstallments: z.boolean().optional(),
     installments: z.coerce.number().optional(),
     updateRecurring: z.boolean().optional(),
     transactionType: z
@@ -23,23 +22,7 @@ export const formSchema = z
   })
   .refine(
     (schema) => {
-      if (
-        schema.hasInstallments &&
-        schema.installments !== undefined &&
-        schema.installments < 2
-      ) {
-        return false;
-      }
-      return true;
-    },
-    {
-      message: 'Please select the correct number of installments (>=2)',
-      path: ['installments']
-    }
-  )
-  .refine(
-    (schema) => {
-      if (schema.fixed && schema.hasInstallments) {
+      if (schema.fixed && schema.installments && schema.installments > 1) {
         return false;
       }
       return true;

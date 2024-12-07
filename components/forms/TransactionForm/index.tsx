@@ -70,7 +70,8 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
         fulfilled: false,
         updaterecurring: false,
         category: '',
-        transactionType: 'Debit'
+        transactionType: 'Debit',
+        installments: 1
       };
     }
   }, [initialData]);
@@ -273,44 +274,21 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
           {isDebit && (
             <div className="grid grid-cols-3 items-center gap-8">
               <CreditCardField control={form.control} />
-
-              <FormField
-                control={form.control}
-                name="hasInstallments"
-                render={({ field }) => (
-                  <FormItem className="space-x-2">
-                    <FormLabel>Installment</FormLabel>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={() => {
-                          field.onChange(!field.value);
-                          form.setValue('installments', 0);
-                        }}
-                        disabled={loading}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="installments"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        disabled={form.getValues().hasInstallments === false}
-                        type="number"
-                        placeholder="2"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {form.getValues().creditCardId && (
+                <FormField
+                  control={form.control}
+                  name="installments"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Installments</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="1" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
             </div>
           )}
           <Button disabled={loading} className="ml-auto" type="submit">
