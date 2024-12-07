@@ -1,6 +1,5 @@
 'use client';
 import React from 'react';
-import * as z from 'zod';
 import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -24,66 +23,13 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
-import { useToast } from '../ui/use-toast';
+import { useToast } from '../../ui/use-toast';
 import axiosInstance from '@/lib/axios';
-import { Switch } from '../ui/switch';
-import { Category, Transaction } from '@/types';
-
-const formSchema = z
-  .object({
-    amount: z.coerce
-      .number()
-      .min(1, { message: 'Amount should be higher than 0' }),
-    fulfilled: z.boolean(),
-    fixed: z.boolean(),
-    date: z.string(),
-    description: z
-      .string()
-      .min(3, { message: 'Description must be at least 3 characters' }),
-    categoryId: z.string().min(1, { message: 'Please select a category' }),
-    accountId: z.string().min(1, { message: 'Please select a account' }),
-    creditCardId: z.string().optional(),
-    hasInstallments: z.boolean().optional(),
-    installments: z.coerce.number().optional(),
-    updateRecurring: z.boolean().optional(),
-    transactionType: z
-      .string()
-      .min(1, { message: 'Please select a transaction type' })
-  })
-  .refine(
-    (schema) => {
-      if (
-        schema.hasInstallments &&
-        schema.installments !== undefined &&
-        schema.installments < 2
-      ) {
-        return false;
-      }
-      return true;
-    },
-    {
-      message: 'Please select the correct number of installments (>=2)',
-      path: ['installments']
-    }
-  )
-  .refine(
-    (schema) => {
-      if (schema.fixed && schema.hasInstallments) {
-        return false;
-      }
-      return true;
-    },
-    {
-      message: "You can't have fixed and installments at the same time",
-      path: ['fixed']
-    }
-  );
-
-type TransactionFormValues = z.infer<typeof formSchema>;
-
-interface TransactionFormProps {
-  initialData: Transaction | null;
-}
+import { Switch } from '../../ui/switch';
+import { Category } from '@/types';
+import { formSchema } from './schema';
+import { TransactionFormProps, TransactionFormValues } from './types';
+import TransactionTypeSelect from './TransactionTypeSelect';
 
 export const TransactionForm: React.FC<TransactionFormProps> = ({
   initialData
@@ -167,8 +113,6 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     try {
       setLoading(true);
 
-      console.log(data);
-
       if (initialData) {
         await axiosInstance.put('/transaction/update', {
           transactionId: initialData.id,
@@ -227,39 +171,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
           className="w-full space-y-8"
         >
           {/* TODO this will be moved for the own page */}
-          <FormField
-            control={form.control}
-            name="transactionType"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Transaction Type</FormLabel>
-                <Select
-                  disabled={loading}
-                  onValueChange={field.onChange}
-                  value={field.value}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue
-                        defaultValue={field.value}
-                        placeholder="Transaction type"
-                      />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem key="debit" value="Debit">
-                      Debit
-                    </SelectItem>
-                    <SelectItem key="credit" value="Credit">
-                      Credit
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <TransactionTypeSelect loading={loading} control={form.control} />
 
           <div className="gap-8 md:grid md:grid-cols-3">
             <FormField
