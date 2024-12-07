@@ -8,44 +8,43 @@ import {
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
-import { Category } from '@/types';
+import { Account } from '@/types';
 import { Control } from 'react-hook-form';
 import { TransactionFormValues } from './types';
 import axiosInstance from '@/lib/axios';
 import { useState, useEffect } from 'react';
 import { toast } from '@/components/ui/use-toast';
 
-const CategoryField = ({
+const AccountField = ({
   control
 }: {
   control: Control<TransactionFormValues>;
 }) => {
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [accounts, setAccounts] = useState<Account[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
-    const fetchCategories = async () => {
+    const fetchAccounts = async () => {
       try {
         const accountResponse = await axiosInstance.get('/account');
-        setCategories(accountResponse.data);
+        setAccounts(accountResponse.data);
       } catch (error) {
         toast({
           variant: 'destructive',
           title: 'Error',
-          description: `Error fetching categories, error: ${error}`
+          description: `Error fetching accounts, error: ${error}`
         });
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCategories();
+    fetchAccounts();
   }, []);
 
   return (
@@ -54,7 +53,7 @@ const CategoryField = ({
       name="accountId"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Category</FormLabel>
+          <FormLabel>Account</FormLabel>
           <Select
             disabled={loading}
             onValueChange={field.onChange}
@@ -70,13 +69,11 @@ const CategoryField = ({
               </SelectTrigger>
             </FormControl>
             <SelectContent>
-              <SelectGroup className="max-h-[20rem] overflow-y-auto">
-                {categories.map((account: Category) => (
-                  <SelectItem key={account.id} value={account.id}>
-                    {account.description}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
+              {accounts.map((acc) => (
+                <SelectItem key={acc.id} value={acc.id}>
+                  {acc.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <FormMessage />
@@ -86,4 +83,4 @@ const CategoryField = ({
   );
 };
 
-export default CategoryField;
+export default AccountField;

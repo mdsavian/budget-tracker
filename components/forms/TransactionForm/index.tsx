@@ -29,18 +29,21 @@ import { formSchema } from './schema';
 import { TransactionFormProps, TransactionFormValues } from './types';
 import TransactionTypeField from './TransactionTypeField';
 import CategoryField from './CategoryField';
+import AccountField from './AccountField';
 
 export const TransactionForm: React.FC<TransactionFormProps> = ({
   initialData
 }) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const title = initialData ? 'Edit transaction' : 'Create transaction';
-  const description = initialData
+
+  const isUpdating = !!initialData;
+  const title = isUpdating ? 'Edit transaction' : 'Create transaction';
+  const description = isUpdating
     ? 'Edit a transaction.'
     : 'Add a new transaction';
-  const action = initialData ? 'Save changes' : 'Create';
-  const toastMessage = initialData
+  const action = isUpdating ? 'Save changes' : 'Create';
+  const toastMessage = isUpdating
     ? 'Transaction updated.'
     : 'Transaction created.';
 
@@ -103,6 +106,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     values: defaultValues
   });
   const isDebit = form.getValues().transactionType === 'Debit';
+  const isRecurring = form.getValues().fixed;
 
   const onSubmit = async (data: TransactionFormValues) => {
     try {
@@ -168,6 +172,68 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
           {/* TODO this will be moved for the own page */}
           <TransactionTypeField loading={loading} control={form.control} />
 
+          <div className="grid grid-cols-3 gap-8">
+            {isDebit && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="fixed"
+                  render={({ field }) => (
+                    <FormItem className="space-x-2">
+                      <FormLabel>Recurring</FormLabel>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={() => field.onChange(!field.value)}
+                          disabled={loading}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {isUpdating && isRecurring && (
+                  <FormField
+                    control={form.control}
+                    name="updateRecurring"
+                    render={({ field }) => (
+                      <FormItem className="space-x-2">
+                        <FormLabel>Update Recurring</FormLabel>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={() => field.onChange(!field.value)}
+                            disabled={loading}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+              </>
+            )}
+
+            <FormField
+              control={form.control}
+              name="fulfilled"
+              render={({ field }) => (
+                <FormItem className="space-x-2">
+                  <FormLabel>Fulfilled</FormLabel>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={() => field.onChange(!field.value)}
+                      disabled={loading}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
           <div className="gap-8 md:grid md:grid-cols-3">
             <FormField
               control={form.control}
@@ -226,96 +292,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
 
             <CategoryField control={form.control} />
 
-            <FormField
-              control={form.control}
-              name="accountId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Account</FormLabel>
-                  <Select
-                    disabled={loading}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          defaultValue={field.value}
-                          placeholder="Select a account"
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {/* @ts-ignore  */}
-                      {accounts.map((acc) => (
-                        <SelectItem key={acc.id} value={acc.id}>
-                          {acc.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="fulfilled"
-              render={({ field }) => (
-                <FormItem className="space-x-2">
-                  <FormLabel>Fulfilled</FormLabel>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={() => field.onChange(!field.value)}
-                      disabled={loading}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {isDebit && (
-              <>
-                <FormField
-                  control={form.control}
-                  name="updateRecurring"
-                  render={({ field }) => (
-                    <FormItem className="space-x-2">
-                      <FormLabel>Update Recurring</FormLabel>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={() => field.onChange(!field.value)}
-                          disabled={loading}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="fixed"
-                  render={({ field }) => (
-                    <FormItem className="space-x-2">
-                      <FormLabel>Recurring</FormLabel>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={() => field.onChange(!field.value)}
-                          disabled={loading}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </>
-            )}
+            <AccountField control={form.control} />
 
             {isDebit && (
               <>
