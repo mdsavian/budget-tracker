@@ -13,8 +13,6 @@ import {
   FormLabel,
   FormMessage
 } from '@/components/ui/form';
-import { Separator } from '@/components/ui/separator';
-import { Heading } from '@/components/ui/heading';
 import { useToast } from '../../ui/use-toast';
 import axiosInstance from '@/lib/axios';
 import { Switch } from '../../ui/switch';
@@ -26,36 +24,33 @@ import AccountField from './AccountField';
 import CreditCardField from './CreditCardField';
 
 export const TransactionForm: React.FC<TransactionFormProps> = ({
-  initialData
+  transaction,
+  onConfirm
 }) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
-  const isUpdating = !!initialData;
-  const title = isUpdating ? 'Edit transaction' : 'Create transaction';
-  const description = isUpdating
-    ? 'Edit a transaction.'
-    : 'Add a new transaction';
+  const isUpdating = !!transaction;
   const action = isUpdating ? 'Save changes' : 'Create';
   const toastMessage = isUpdating
     ? 'Transaction updated.'
     : 'Transaction created.';
 
   const defaultValues = React.useMemo(() => {
-    if (initialData) {
-      const transactionDate = initialData.effectuatedDate || initialData.date;
+    if (transaction) {
+      const transactionDate = transaction.effectuatedDate || transaction.date;
 
       return {
-        amount: initialData.amount,
-        fulfilled: initialData.fulfilled,
-        fixed: initialData.recurringTransactionId != null,
+        amount: transaction.amount,
+        fulfilled: transaction.fulfilled,
+        fixed: transaction.recurringTransactionId != null,
         date: new Date(transactionDate).toISOString().split('T')[0],
-        description: initialData.description,
-        categoryId: initialData.categoryId,
-        accountId: initialData.accountId,
-        creditCardId: initialData.creditCardId ? initialData.creditCardId : '',
+        description: transaction.description,
+        categoryId: transaction.categoryId,
+        accountId: transaction.accountId,
+        creditCardId: transaction.creditCardId ? transaction.creditCardId : '',
         updateRecurring: false,
-        transactionType: initialData.transactionType
+        transactionType: transaction.transactionType
       };
     } else {
       return {
@@ -74,13 +69,14 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
         installments: 1
       };
     }
-  }, [initialData]);
+  }, [transaction]);
 
   const form = useForm<TransactionFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,
     values: defaultValues
   });
+
   const isDebit = form.getValues().transactionType === 'Debit';
   const isRecurring = form.getValues().fixed;
 
@@ -88,13 +84,13 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     try {
       setLoading(true);
 
-      if (initialData) {
+      if (transaction) {
         await axiosInstance.put('/transaction/update', {
-          transactionId: initialData.id,
+          transactionId: transaction.id,
           accountId: data.accountId,
           creditCardId: data.creditCardId,
           categoryId: data.categoryId,
-          recurringTransactionId: initialData.recurringTransactionId,
+          recurringTransactionId: transaction.recurringTransactionId,
           date: data.date,
           description: data.description,
           amount: data.amount,
@@ -136,16 +132,11 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <Heading title={title} description={description} />
-      </div>
-      <Separator />
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full space-y-8"
         >
-          {/* TODO this will be moved for the own page */}
           <TransactionTypeField loading={loading} control={form.control} />
 
           <div className="grid grid-cols-3 gap-8">
@@ -274,6 +265,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
           {isDebit && (
             <div className="grid grid-cols-3 items-center gap-8">
               <CreditCardField control={form.control} />
+
               {form.getValues().creditCardId && (
                 <FormField
                   control={form.control}
@@ -291,9 +283,23 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
               )}
             </div>
           )}
-          <Button disabled={loading} className="ml-auto" type="submit">
-            {action}
-          </Button>
+          <div className="flex items-center justify-start">
+            <Button disabled={loading} type="submit">
+              {action}
+            </Button>
+
+            <Button
+              disabled={loading}
+              className="ml-auto"
+              variant="destructive"
+              type="button"
+              onClick={() => {
+                onConfirm();
+              }}
+            >
+              Cancel
+            </Button>
+          </div>
         </form>
       </Form>
     </>

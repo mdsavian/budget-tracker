@@ -9,22 +9,23 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { Edit, MoreHorizontal, Trash } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { TransactionData } from './types';
 import { useToast } from '@/components/ui/use-toast';
 import axiosInstance from '@/lib/axios';
 import { idIsNull } from '@/lib/utils';
+import TransactionModal from '@/components/modal/transaction-modal';
 
 interface CellActionProps {
   data: TransactionData;
 }
 
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
-  const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
-  const router = useRouter();
   const { toast } = useToast();
+
+  const [openAlertModal, setOpenAlertModal] = useState(false);
+  const [openTransactionModal, setOpenTransactionModal] = useState(false);
+
   let isRecurring = false;
   let id = data.id;
 
@@ -52,18 +53,27 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         description: 'Error deleting transaction'
       });
     } finally {
-      setOpen(false);
+      setOpenAlertModal(false);
     }
   };
 
   return (
     <>
       <AlertModal
-        isOpen={open}
-        onClose={() => setOpen(false)}
+        isOpen={openAlertModal}
+        onClose={() => setOpenAlertModal(false)}
         onConfirm={onConfirm}
-        loading={loading}
       />
+      {openTransactionModal && (
+        <TransactionModal
+          id={id}
+          isOpen={openTransactionModal}
+          onClose={() => setOpenTransactionModal(false)}
+          isRecurring={isRecurring}
+          date={data.date}
+        />
+      )}
+
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
@@ -74,17 +84,11 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-          <DropdownMenuItem
-            onClick={() =>
-              // TODO this can de do in a different way, context for example, need to be refactored later
-              router.push(
-                `/dashboard/transaction/${id}?isRecurring=${isRecurring}&date=${data.date}`
-              )
-            }
-          >
+          <DropdownMenuItem onClick={() => setOpenTransactionModal(true)}>
             <Edit className="mr-2 h-4 w-4" /> Update
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setOpen(true)}>
+
+          <DropdownMenuItem onClick={() => setOpenAlertModal(true)}>
             <Trash className="mr-2 h-4 w-4" /> Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
